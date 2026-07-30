@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
-import { 
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import {
   ArrowRight,
   Check,
   CheckCircle2,
@@ -21,92 +21,97 @@ import {
   ShieldAlert,
   Sparkles,
   Users,
-} from 'lucide-react'
+} from "lucide-react";
 
 interface Project {
-  id: string
-  name: string
-  created_at: string
+  id: string;
+  name: string;
+  created_at: string;
 }
 
 interface StagedTask {
-  id?: string
-  title: string
-  description: string
-  complexity: 'low' | 'medium' | 'high'
-  category: string
-  status?: string
+  id?: string;
+  title: string;
+  description: string;
+  complexity: "low" | "medium" | "high";
+  category: string;
+  status?: string;
 }
 
 interface BaselineItem {
-  id: string
-  deliverable: string
-  exclusions: string | null
-  assumptions: string | null
+  id: string;
+  deliverable: string;
+  exclusions: string | null;
+  assumptions: string | null;
 }
 
 interface ScopeEvent {
-  id: string
-  request_text: string
-  verdict: 'in_scope' | 'out_of_scope'
-  discrepancy_note: string
-  extra_hours: number
-  extra_cost: number
-  status: string
+  id: string;
+  request_text: string;
+  verdict: "in_scope" | "out_of_scope";
+  discrepancy_note: string;
+  extra_hours: number;
+  extra_cost: number;
+  status: string;
 }
-
 
 function DashboardCard({
   title,
   description,
   children,
   action,
-  className = '',
+  className = "",
 }: {
-  title: string
-  description?: string
-  children: React.ReactNode
-  action?: React.ReactNode
-  className?: string
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+  action?: React.ReactNode;
+  className?: string;
 }) {
   return (
-    <section className={`rounded-2xl border border-border bg-card shadow-[0_1px_2px_rgba(15,23,42,0.04)] ${className}`}>
+    <section
+      className={`rounded-2xl border border-border bg-card shadow-[0_1px_2px_rgba(15,23,42,0.04)] ${className}`}
+    >
       <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4 sm:px-6">
         <div className="space-y-1">
           <h2 className="text-sm font-semibold tracking-tight text-foreground sm:text-base">
             {title}
           </h2>
           {description ? (
-            <p className="text-sm leading-6 text-muted-foreground">{description}</p>
+            <p className="text-sm leading-6 text-muted-foreground">
+              {description}
+            </p>
           ) : null}
         </div>
         {action ? <div className="shrink-0">{action}</div> : null}
       </div>
       <div className="px-5 py-5 sm:px-6">{children}</div>
     </section>
-  )
+  );
 }
 
 function StatusBadge({
-  tone = 'neutral',
+  tone = "neutral",
   children,
 }: {
-  tone?: 'neutral' | 'success' | 'warning' | 'danger' | 'info'
-  children: React.ReactNode
+  tone?: "neutral" | "success" | "warning" | "danger" | "info";
+  children: React.ReactNode;
 }) {
   const tones = {
-    neutral: 'border-border bg-muted text-foreground',
-    success: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-    warning: 'border-amber-200 bg-amber-50 text-amber-700',
-    danger: 'border-rose-200 bg-rose-50 text-rose-700',
-    info: 'border-indigo-200 bg-indigo-50 text-indigo-700',
-  }
+    neutral: "border-border bg-muted text-foreground",
+    success: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    warning: "border-amber-200 bg-amber-50 text-amber-700",
+    danger: "border-rose-200 bg-rose-50 text-rose-700",
+    info: "border-indigo-200 bg-indigo-50 text-indigo-700",
+  };
 
   return (
-    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-medium ${tones[tone]}`}>
+    <span
+      className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-medium ${tones[tone]}`}
+    >
       {children}
     </span>
-  )
+  );
 }
 
 function EmptyState({
@@ -115,10 +120,10 @@ function EmptyState({
   description,
   action,
 }: {
-  icon: React.ComponentType<{ className?: string }>
-  title: string
-  description: string
-  action?: React.ReactNode
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+  action?: React.ReactNode;
 }) {
   return (
     <div className="flex min-h-[220px] flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-muted/25 px-6 py-10 text-center">
@@ -131,7 +136,7 @@ function EmptyState({
       </p>
       {action ? <div className="mt-5">{action}</div> : null}
     </div>
-  )
+  );
 }
 
 function WorkflowStep({
@@ -140,410 +145,466 @@ function WorkflowStep({
   completed,
   isLast = false,
 }: {
-  step: string
-  active?: boolean
-  completed?: boolean
-  isLast?: boolean
+  step: string;
+  active?: boolean;
+  completed?: boolean;
+  isLast?: boolean;
 }) {
-  const tone = active ? 'info' : completed ? 'success' : 'neutral'
+  const tone = active ? "info" : completed ? "success" : "neutral";
 
   return (
     <div className="flex items-start gap-3">
       <div className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 transition-colors duration-200 hover:border-ring/40">
-        <StatusBadge tone={tone}>{completed ? 'Done' : active ? 'Current' : 'Next'}</StatusBadge>
+        <StatusBadge tone={tone}>
+          {completed ? "Done" : active ? "Current" : "Next"}
+        </StatusBadge>
         <span className="text-sm font-medium text-foreground">{step}</span>
       </div>
-      {!isLast ? <ChevronRight className="mt-3 hidden h-4 w-4 shrink-0 text-muted-foreground lg:block" /> : null}
+      {!isLast ? (
+        <ChevronRight className="mt-3 hidden h-4 w-4 shrink-0 text-muted-foreground lg:block" />
+      ) : null}
     </div>
-  )
+  );
 }
 export default function Dashboard() {
-  const [user, setUser] = useState<any>(null)
-  const [loadingUser, setLoadingUser] = useState(true)
-  const [projects, setProjects] = useState<Project[]>([])
-  const [loadingProjects, setLoadingProjects] = useState(false)
-  const [selectedProjectId, setSelectedProjectId] = useState<string>('')
-  const [newProjectName, setNewProjectName] = useState('')
-  const [creatingProject, setCreatingProject] = useState(false)
-  const [activeTab, setActiveTab] = useState<'phase1' | 'phase2'>('phase1')
+  const [user, setUser] = useState<any>(null);
+  const [loadingUser, setLoadingUser] = useState(true);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("");
+  const [newProjectName, setNewProjectName] = useState("");
+  const [creatingProject, setCreatingProject] = useState(false);
+  const [activeTab, setActiveTab] = useState<"phase1" | "phase2">("phase1");
 
   // Phase 1: Extraction & Staging States
-  const [rawText, setRawText] = useState('')
-  const [extracting, setExtracting] = useState(false)
-  const [extractedTasks, setExtractedTasks] = useState<StagedTask[]>([])
-  const [savingTasks, setSavingTasks] = useState(false)
-  const [savedTasks, setSavedTasks] = useState<StagedTask[]>([])
-  const [loadingSavedTasks, setLoadingSavedTasks] = useState(false)
+  const [rawText, setRawText] = useState("");
+  const [extracting, setExtracting] = useState(false);
+  const [extractedTasks, setExtractedTasks] = useState<StagedTask[]>([]);
+  const [savingTasks, setSavingTasks] = useState(false);
+  const [savedTasks, setSavedTasks] = useState<StagedTask[]>([]);
+  const [loadingSavedTasks, setLoadingSavedTasks] = useState(false);
 
   // Phase 2: Baseline & Scope Creep States
-  const [sowText, setSowText] = useState('')
-  const [savingBaseline, setSavingBaseline] = useState(false)
-  const [baselineItems, setBaselineItems] = useState<BaselineItem[]>([])
-  const [loadingBaseline, setLoadingBaseline] = useState(false)
-  const [clientRequestText, setClientRequestText] = useState('')
-  const [checkingScope, setCheckingScope] = useState(false)
-  const [scopeEvent, setScopeEvent] = useState<ScopeEvent | null>(null)
-  const [comparisonResult, setComparisonResult] = useState<ComparisonResult | null>(null)
-  
-  // Negotiation states
-  const [clientName, setClientName] = useState('')
-  const [negotiationHours, setNegotiationHours] = useState(0)
-  const [negotiationCost, setNegotiationCost] = useState(0)
-  const [draftingEmail, setDraftingEmail] = useState(false)
-  const [emailDraft, setEmailDraft] = useState<{ subject: string; body: string } | null>(null)
-  
-  const [copied, setCopied] = useState(false)
-  const [errorMsg, setErrorMsg] = useState('')
-  const [successMsg, setSuccessMsg] = useState('')
+  const [sowText, setSowText] = useState("");
+  const [savingBaseline, setSavingBaseline] = useState(false);
+  const [baselineItems, setBaselineItems] = useState<BaselineItem[]>([]);
+  const [loadingBaseline, setLoadingBaseline] = useState(false);
+  const [clientRequestText, setClientRequestText] = useState("");
+  const [checkingScope, setCheckingScope] = useState(false);
+  const [scopeEvent, setScopeEvent] = useState<ScopeEvent | null>(null);
+  const [comparisonResult, setComparisonResult] =
+    useState<ComparisonResult | null>(null);
+  const [comparisonTasks, setComparisonTasks] = useState<StagedTask[]>([]);
 
-  const router = useRouter()
-  const supabase = createClient()
+  // Negotiation states
+  const [clientName, setClientName] = useState("");
+  const [negotiationHours, setNegotiationHours] = useState(0);
+  const [negotiationCost, setNegotiationCost] = useState(0);
+  const [draftingEmail, setDraftingEmail] = useState(false);
+  const [emailDraft, setEmailDraft] = useState<{
+    subject: string;
+    body: string;
+  } | null>(null);
+
+  const [copied, setCopied] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+
+  const router = useRouter();
+  const supabase = createClient();
 
   const mapApprovedTaskToBaselineItem = (task: StagedTask): BaselineItem => ({
     id: task.id || `${task.title}-${task.category}`,
     deliverable: task.title,
     exclusions: null,
     assumptions: null,
-  })
-  const selectedProject = projects.find((project) => project.id === selectedProjectId)
-  const reviewTasks = extractedTasks
+  });
+  const selectedProject = projects.find(
+    (project) => project.id === selectedProjectId,
+  );
+  const reviewTasks = extractedTasks;
   const comparisonCounts = comparisonResult
     ? {
         added: comparisonResult.added.length,
         modified: comparisonResult.modified.length,
         removed: comparisonResult.removed.length,
       }
-    : null
+    : null;
   const workflowSteps = [
-    'Extraction',
-    'Review',
-    'Baseline',
-    'Scope Check',
-    'Professional Email',
-  ]
+    "Extraction",
+    "Review",
+    "Baseline",
+    "Scope Check",
+    "Professional Email",
+  ];
 
   // Verify auth session
   useEffect(() => {
     async function checkAuth() {
-      const { data: { user }, error } = await supabase.auth.getUser()
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
       if (error || !user) {
-        router.push('/login')
-        return
+        router.push("/login");
+        return;
       }
-      setUser(user)
-      setLoadingUser(false)
-      fetchProjects()
+      setUser(user);
+      setLoadingUser(false);
+      fetchProjects();
     }
-    checkAuth()
-  }, [])
+    checkAuth();
+  }, []);
 
   // Fetch saved tasks and baseline when selected project changes
   const showSuccess = (msg: string) => {
-    setSuccessMsg(msg)
-    setErrorMsg('')
-    setTimeout(() => setSuccessMsg(''), 5000)
-  }
+    setSuccessMsg(msg);
+    setErrorMsg("");
+    setTimeout(() => setSuccessMsg(""), 5000);
+  };
 
   const showError = (msg: string) => {
-    setErrorMsg(msg)
-    setSuccessMsg('')
-    setTimeout(() => setErrorMsg(''), 7000)
-  }
+    setErrorMsg(msg);
+    setSuccessMsg("");
+    setTimeout(() => setErrorMsg(""), 7000);
+  };
 
   const fetchProjects = async () => {
-    setLoadingProjects(true)
+    setLoadingProjects(true);
     try {
-      const res = await fetch('/api/projects')
-      const data = await res.json()
+      const res = await fetch("/api/projects");
+      const data = await res.json();
       if (res.ok) {
-        setProjects(data.projects || [])
+        setProjects(data.projects || []);
         if (data.projects?.length > 0 && !selectedProjectId) {
-          setSelectedProjectId(data.projects[0].id)
+          setSelectedProjectId(data.projects[0].id);
         }
       } else {
-        showError(data.error || 'Failed to fetch projects')
+        showError(data.error || "Failed to fetch projects");
       }
     } catch (e: any) {
-      showError(e.message)
+      showError(e.message);
     } finally {
-      setLoadingProjects(false)
+      setLoadingProjects(false);
     }
-  }
+  };
 
   const createProject = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newProjectName.trim()) return
-    setCreatingProject(true)
+    e.preventDefault();
+    if (!newProjectName.trim()) return;
+    setCreatingProject(true);
     try {
-      const res = await fetch('/api/projects', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newProjectName })
-      })
-      const data = await res.json()
+      const res = await fetch("/api/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newProjectName }),
+      });
+      const data = await res.json();
       if (res.ok) {
-        showSuccess(`Project "${data.project.name}" created!`)
-        setProjects([data.project, ...projects])
-        setSelectedProjectId(data.project.id)
-        setNewProjectName('')
+        showSuccess(`Project "${data.project.name}" created!`);
+        setProjects([data.project, ...projects]);
+        setSelectedProjectId(data.project.id);
+        setNewProjectName("");
       } else {
-        showError(data.error || 'Failed to create project')
+        showError(data.error || "Failed to create project");
       }
     } catch (e: any) {
-      showError(e.message)
+      showError(e.message);
     } finally {
-      setCreatingProject(false)
+      setCreatingProject(false);
     }
-  }
+  };
 
   async function fetchSavedTasks() {
-    if (!selectedProjectId) return
-    setLoadingSavedTasks(true)
+    if (!selectedProjectId) return;
+    setLoadingSavedTasks(true);
     try {
-      const res = await fetch(`/api/staged-tasks?projectId=${selectedProjectId}`)
-      const data = await res.json()
+      const res = await fetch(
+        `/api/staged-tasks?projectId=${selectedProjectId}`,
+      );
+      const data = await res.json();
       if (res.ok) {
-        setSavedTasks(data.tasks || [])
+        setSavedTasks(data.tasks || []);
       } else {
-        showError(data.error || 'Failed to fetch staged tasks')
+        showError(data.error || "Failed to fetch staged tasks");
       }
     } catch (e: any) {
-      showError(e.message)
+      showError(e.message);
     } finally {
-      setLoadingSavedTasks(false)
+      setLoadingSavedTasks(false);
     }
   }
 
   async function fetchBaselineItems() {
-    if (!selectedProjectId) return
-    setLoadingBaseline(true)
+    if (!selectedProjectId) return;
+    setLoadingBaseline(true);
     try {
       // Approved tasks are stored in staged_tasks after Phase 1 save.
       const { data, error } = await supabase
-        .from('staged_tasks')
-        .select('*')
-        .eq('project_id', selectedProjectId)
-        .order('id', { ascending: true })
+        .from("staged_tasks")
+        .select("*")
+        .eq("project_id", selectedProjectId)
+        .order("id", { ascending: true });
       if (error) {
-        showError(error.message)
+        showError(error.message);
       } else {
-        setBaselineItems((data || []).map(mapApprovedTaskToBaselineItem))
+        setBaselineItems((data || []).map(mapApprovedTaskToBaselineItem));
       }
     } catch (e: any) {
-      showError(e.message)
+      showError(e.message);
     } finally {
-      setLoadingBaseline(false)
+      setLoadingBaseline(false);
     }
   }
 
   useEffect(() => {
-    if (!selectedProjectId) return
+    if (!selectedProjectId) return;
 
     const timeout = window.setTimeout(() => {
-      fetchSavedTasks()
-      fetchBaselineItems()
+      fetchSavedTasks();
+      fetchBaselineItems();
       // reset states
-      setExtractedTasks([])
-      setComparisonResult(null)
-      setScopeEvent(null)
-      setEmailDraft(null)
-      setErrorMsg('')
-      setSuccessMsg('')
-    }, 0)
+      setExtractedTasks([]);
+      setComparisonResult(null);
+      setScopeEvent(null);
+      setEmailDraft(null);
+      setErrorMsg("");
+      setSuccessMsg("");
+    }, 0);
 
-    return () => window.clearTimeout(timeout)
-  }, [selectedProjectId])
+    return () => window.clearTimeout(timeout);
+  }, [selectedProjectId]);
 
   const handleSignOut = async () => {
-    await fetch('/auth/signout', { method: 'POST' })
-    router.push('/login')
-    router.refresh()
-  }
+    await fetch("/auth/signout", { method: "POST" });
+    router.push("/login");
+    router.refresh();
+  };
 
   // Phase 1 actions
   const extractTasks = async () => {
-    if (!rawText.trim()) return
-    setExtracting(true)
-    setErrorMsg('')
+    if (!rawText.trim()) return;
+    setExtracting(true);
+    setErrorMsg("");
     try {
-      const res = await fetch('/api/extract', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rawText })
-      })
-      const data = await res.json()
+      const res = await fetch("/api/extract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rawText }),
+      });
+      const data = await res.json();
       if (res.ok) {
-        setExtractedTasks(data.tasks || [])
-        showSuccess(`Extracted ${data.tasks?.length || 0} candidate tasks!`)
+        setExtractedTasks(data.tasks || []);
+        showSuccess(`Extracted ${data.tasks?.length || 0} candidate tasks!`);
       } else {
-        showError(data.error || 'Extraction failed')
+        showError(data.error || "Extraction failed");
       }
     } catch (e: any) {
-      showError(e.message)
+      showError(e.message);
     } finally {
-      setExtracting(false)
+      setExtracting(false);
     }
-  }
+  };
 
-  const updateExtractedTask = (index: number, key: keyof StagedTask, value: string) => {
-    const updated = [...extractedTasks]
-    updated[index] = { ...updated[index], [key]: value }
-    setExtractedTasks(updated)
-  }
+  const extractComparisonTasks = async (): Promise<StagedTask[] | null> => {
+    if (!clientRequestText.trim()) return null;
 
-  const runScopeCheck = () => {
-    setCheckingScope(true)
+    try {
+      const res = await fetch("/api/extract", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          rawText: clientRequestText,
+        }),
+      });
 
-    const normalizeTitle = (value: string) => value.trim().toLowerCase()
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError(data.error || "Comparison extraction failed");
+        return null;
+      }
+
+      setComparisonTasks(data.tasks || []);
+
+      return (data.tasks || []) as StagedTask[];
+    } catch (e: any) {
+      showError(e.message);
+      return null;
+    }
+  };
+
+  const updateExtractedTask = (
+    index: number,
+    key: keyof StagedTask,
+    value: string,
+  ) => {
+    const updated = [...extractedTasks];
+    updated[index] = { ...updated[index], [key]: value };
+    setExtractedTasks(updated);
+  };
+
+  const runScopeCheck = async () => {
+    setCheckingScope(true);
+
+    const normalizeTitle = (value: string) => value.trim().toLowerCase();
 
     if (baselineItems.length === 0) {
       setComparisonResult({
         added: [],
         modified: [],
         removed: [],
-        message: 'No baseline available',
-      })
-      setCheckingScope(false)
-      return
+        message: "No baseline available",
+      });
+      setCheckingScope(false);
+      return;
     }
 
-    if (reviewTasks.length === 0) {
+    const tasks = await extractComparisonTasks();
+
+    if (!tasks || tasks.length === 0) {
       setComparisonResult({
         added: [],
         modified: [],
         removed: [],
-        message: 'No comparison available',
-      })
-      setCheckingScope(false)
-      return
+        message: "No comparison available",
+      });
+      setCheckingScope(false);
+      return;
     }
 
     const baselineByTitle = new Map(
-      baselineItems.map((item) => [normalizeTitle(item.deliverable), item] as const)
-    )
-    const extractedByTitle = new Map(
-      reviewTasks.map((task) => [normalizeTitle(task.title), task] as const)
-    )
+      baselineItems.map(
+        (item) => [normalizeTitle(item.deliverable), item] as const,
+      ),
+    );
+   const extractedByTitle = new Map(
+  tasks.map((task) => [normalizeTitle(task.title), task] as const)
+);
 
-    const added = reviewTasks.filter((task) => !baselineByTitle.has(normalizeTitle(task.title)))
+    const added = tasks.filter(
+      (task) => !baselineByTitle.has(normalizeTitle(task.title)),
+    );
     const removed = baselineItems.filter(
-      (item) => !extractedByTitle.has(normalizeTitle(item.deliverable))
-    )
-    const modified = reviewTasks.flatMap((task) => {
-      const baseline = baselineByTitle.get(normalizeTitle(task.title))
+      (item) => !extractedByTitle.has(normalizeTitle(item.deliverable)),
+    );
+    const modified = tasks.flatMap((task) => {
+      const baseline = baselineByTitle.get(normalizeTitle(task.title));
       if (!baseline || baseline.deliverable.trim() === task.title.trim()) {
-        return []
+        return [];
       }
 
-      return [{ baseline, task }]
-    })
+      return [{ baseline, task }];
+    });
 
     setComparisonResult({
       added,
       modified,
       removed,
       message: null,
-    })
+    });
 
-    setCheckingScope(false)
-  }
+    setCheckingScope(false);
+  };
 
   const saveStagedTasks = async () => {
-    if (extractedTasks.length === 0 || !selectedProjectId) return
-    setSavingTasks(true)
+    if (extractedTasks.length === 0 || !selectedProjectId) return;
+    setSavingTasks(true);
     try {
-      const res = await fetch('/api/staged-tasks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/staged-tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           projectId: selectedProjectId,
-          tasks: extractedTasks
-        })
-      })
-      const data = await res.json()
+          tasks: extractedTasks,
+        }),
+      });
+      const data = await res.json();
       if (res.ok) {
-        showSuccess('Staged tasks saved successfully!')
-        setExtractedTasks([])
-        fetchSavedTasks()
-        fetchBaselineItems()
+        showSuccess("Staged tasks saved successfully!");
+        setExtractedTasks([]);
+        fetchSavedTasks();
+        fetchBaselineItems();
       } else {
-        showError(data.error || 'Failed to save tasks')
+        showError(data.error || "Failed to save tasks");
       }
     } catch (e: any) {
-      showError(e.message)
+      showError(e.message);
     } finally {
-      setSavingTasks(false)
+      setSavingTasks(false);
     }
-  }
+  };
 
   // Phase 2 actions
   const saveBaseline = async () => {
-    if (!sowText.trim() || !selectedProjectId) return
-    setSavingBaseline(true)
-    setErrorMsg('')
+    if (!sowText.trim() || !selectedProjectId) return;
+    setSavingBaseline(true);
+    setErrorMsg("");
     try {
-      const res = await fetch('/api/baseline', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/baseline", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           projectId: selectedProjectId,
-          sourceText: sowText
-        })
-      })
-      const data = await res.json()
+          sourceText: sowText,
+        }),
+      });
+      const data = await res.json();
       if (res.ok) {
-        showSuccess('Baseline structured and saved to DB!')
-        setSowText('')
-        fetchBaselineItems()
+        showSuccess("Baseline structured and saved to DB!");
+        setSowText("");
+        fetchBaselineItems();
       } else {
-        showError(data.error || 'Failed to structure baseline')
+        showError(data.error || "Failed to structure baseline");
       }
     } catch (e: any) {
-      showError(e.message)
+      showError(e.message);
     } finally {
-      setSavingBaseline(false)
+      setSavingBaseline(false);
     }
-  }
+  };
 
   const generateDraft = async () => {
-    if (!scopeEvent || !selectedProjectId) return
-    setDraftingEmail(true)
-    setErrorMsg('')
+    if (!scopeEvent || !selectedProjectId) return;
+    setDraftingEmail(true);
+    setErrorMsg("");
     try {
-      const res = await fetch('/api/draft-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/draft-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           scopeEventId: scopeEvent.id,
           extraHours: negotiationHours,
           extraCost: negotiationCost,
-          clientName
-        })
-      })
-      const data = await res.json()
+          clientName,
+        }),
+      });
+      const data = await res.json();
       if (res.ok) {
         setEmailDraft({
           subject: data.subject,
-          body: data.body
-        })
-        showSuccess('Pushback email drafted successfully!')
+          body: data.body,
+        });
+        showSuccess("Pushback email drafted successfully!");
       } else {
-        showError(data.error || 'Email drafting failed')
+        showError(data.error || "Email drafting failed");
       }
     } catch (e: any) {
-      showError(e.message)
+      showError(e.message);
     } finally {
-      setDraftingEmail(false)
+      setDraftingEmail(false);
     }
-  }
+  };
 
   const copyToClipboard = () => {
-    if (!emailDraft) return
-    const text = `Subject: ${emailDraft.subject}\n\n${emailDraft.body}`
-    navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+    if (!emailDraft) return;
+    const text = `Subject: ${emailDraft.subject}\n\n${emailDraft.body}`;
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const renderEmptyProjectState = () => (
     <EmptyState
@@ -553,21 +614,23 @@ export default function Dashboard() {
       action={
         <Button
           type="button"
-          onClick={() => document.getElementById('project-create-input')?.focus()}
+          onClick={() =>
+            document.getElementById("project-create-input")?.focus()
+          }
           className="h-10 rounded-xl bg-foreground px-4 text-sm text-background hover:bg-zinc-800"
         >
           Create Project
         </Button>
       }
     />
-  )
+  );
 
   const renderLoadingState = (label: string) => (
     <div className="flex items-center gap-3 rounded-2xl border border-border bg-muted/20 px-4 py-5 text-sm text-muted-foreground">
       <Loader2 className="h-4 w-4 animate-spin text-indigo-600" />
       <span>{label}</span>
     </div>
-  )
+  );
 
   if (loadingUser) {
     return (
@@ -576,12 +639,16 @@ export default function Dashboard() {
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-muted text-indigo-600">
             <Sparkles className="h-5 w-5 animate-pulse" />
           </div>
-          <p className="text-sm font-medium text-foreground">Verifying session</p>
-          <p className="text-sm text-muted-foreground">Loading your workspace securely.</p>
+          <p className="text-sm font-medium text-foreground">
+            Verifying session
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Loading your workspace securely.
+          </p>
           <Loader2 className="h-5 w-5 animate-spin text-indigo-600" />
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -608,12 +675,12 @@ export default function Dashboard() {
                 Current Project
               </p>
               <p className="mt-1 text-sm font-medium text-foreground">
-                {selectedProject?.name || 'No project selected'}
+                {selectedProject?.name || "No project selected"}
               </p>
             </div>
 
-            <StatusBadge tone={selectedProject ? 'success' : 'warning'}>
-              {selectedProject ? 'Workspace ready' : 'Select a project'}
+            <StatusBadge tone={selectedProject ? "success" : "warning"}>
+              {selectedProject ? "Workspace ready" : "Select a project"}
             </StatusBadge>
 
             <div className="rounded-full border border-border bg-card px-3 py-2 text-sm text-muted-foreground">
@@ -649,7 +716,11 @@ export default function Dashboard() {
         <DashboardCard
           title="Workspace header"
           description="Choose a project, create a new workspace, and keep the current scope context visible."
-          action={<StatusBadge tone={projects.length > 0 ? 'success' : 'warning'}>{projects.length > 0 ? 'Projects loaded' : 'No projects yet'}</StatusBadge>}
+          action={
+            <StatusBadge tone={projects.length > 0 ? "success" : "warning"}>
+              {projects.length > 0 ? "Projects loaded" : "No projects yet"}
+            </StatusBadge>
+          }
         >
           <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="space-y-3">
@@ -657,7 +728,7 @@ export default function Dashboard() {
                 Active Workspace
               </label>
               {loadingProjects ? (
-                renderLoadingState('Loading projects...')
+                renderLoadingState("Loading projects...")
               ) : projects.length === 0 ? (
                 <EmptyState
                   icon={Users}
@@ -681,7 +752,10 @@ export default function Dashboard() {
               )}
             </div>
 
-            <form onSubmit={createProject} className="space-y-3 rounded-2xl border border-border bg-muted/20 p-4">
+            <form
+              onSubmit={createProject}
+              className="space-y-3 rounded-2xl border border-border bg-muted/20 p-4"
+            >
               <label className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground block">
                 New Project
               </label>
@@ -699,7 +773,11 @@ export default function Dashboard() {
                 disabled={creatingProject}
                 className="h-12 w-full rounded-xl bg-foreground text-background hover:bg-zinc-800"
               >
-                {creatingProject ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                {creatingProject ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Plus className="h-4 w-4" />
+                )}
                 Create Project
               </Button>
             </form>
@@ -713,8 +791,12 @@ export default function Dashboard() {
               description="A simple, connected sequence that shows exactly where you are in the scope-management flow."
               action={
                 <div className="flex items-center gap-2">
-                  <StatusBadge tone={activeTab === 'phase1' ? 'info' : 'success'}>
-                    {activeTab === 'phase1' ? 'Phase 1 workspace' : 'Phase 2 workspace'}
+                  <StatusBadge
+                    tone={activeTab === "phase1" ? "info" : "success"}
+                  >
+                    {activeTab === "phase1"
+                      ? "Phase 1 workspace"
+                      : "Phase 2 workspace"}
                   </StatusBadge>
                 </div>
               }
@@ -724,8 +806,11 @@ export default function Dashboard() {
                   <WorkflowStep
                     key={step}
                     step={step}
-                    active={(activeTab === 'phase1' && index < 2) || (activeTab === 'phase2' && index >= 2)}
-                    completed={activeTab === 'phase2' && index < 2}
+                    active={
+                      (activeTab === "phase1" && index < 2) ||
+                      (activeTab === "phase2" && index >= 2)
+                    }
+                    completed={activeTab === "phase2" && index < 2}
                     isLast={index === workflowSteps.length - 1}
                   />
                 ))}
@@ -734,22 +819,22 @@ export default function Dashboard() {
 
             <div className="flex flex-wrap gap-2 rounded-2xl border border-border bg-card p-2 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
               <button
-                onClick={() => setActiveTab('phase1')}
+                onClick={() => setActiveTab("phase1")}
                 className={`flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 ${
-                  activeTab === 'phase1'
-                    ? 'bg-foreground text-background'
-                    : 'bg-background text-muted-foreground hover:text-foreground'
+                  activeTab === "phase1"
+                    ? "bg-foreground text-background"
+                    : "bg-background text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <MessageSquareText className="h-4 w-4" />
                 Phase 1: Extraction & Review
               </button>
               <button
-                onClick={() => setActiveTab('phase2')}
+                onClick={() => setActiveTab("phase2")}
                 className={`flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 ${
-                  activeTab === 'phase2'
-                    ? 'bg-foreground text-background'
-                    : 'bg-background text-muted-foreground hover:text-foreground'
+                  activeTab === "phase2"
+                    ? "bg-foreground text-background"
+                    : "bg-background text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <FileText className="h-4 w-4" />
@@ -757,18 +842,24 @@ export default function Dashboard() {
               </button>
             </div>
 
-            {activeTab === 'phase1' && (
+            {activeTab === "phase1" && (
               <div className="grid gap-6 lg:grid-cols-[1.02fr_0.98fr]">
                 <div className="space-y-6">
                   <DashboardCard
                     title="Requirement Extraction"
                     description="Paste client requirements or upload a document to extract structured tasks."
-                    action={<StatusBadge tone="info">Extraction workspace</StatusBadge>}
+                    action={
+                      <StatusBadge tone="info">
+                        Extraction workspace
+                      </StatusBadge>
+                    }
                   >
                     <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
                       <div className="space-y-4">
                         <div className="rounded-2xl border border-border bg-muted/20 px-4 py-4 text-sm leading-6 text-muted-foreground">
-                          Paste a client email, PRD, meeting note, or requirement document. The extraction flow will turn the request into structured tasks for review.
+                          Paste a client email, PRD, meeting note, or
+                          requirement document. The extraction flow will turn
+                          the request into structured tasks for review.
                         </div>
                         <textarea
                           placeholder="Paste client email, PRD, meeting notes or requirement document..."
@@ -800,7 +891,9 @@ export default function Dashboard() {
                       <div className="space-y-4 rounded-2xl border border-border bg-background p-4">
                         <div className="flex items-center gap-2">
                           <MessageSquareText className="h-4 w-4 text-indigo-600" />
-                          <h3 className="text-sm font-semibold text-foreground">What gets extracted</h3>
+                          <h3 className="text-sm font-semibold text-foreground">
+                            What gets extracted
+                          </h3>
                         </div>
                         <div className="space-y-3 text-sm leading-6 text-muted-foreground">
                           <div className="rounded-xl border border-border bg-muted/20 px-3 py-3">
@@ -810,11 +903,13 @@ export default function Dashboard() {
                             Complex tasks split into readable review cards
                           </div>
                           <div className="rounded-xl border border-border bg-muted/20 px-3 py-3">
-                            Existing task status and complexity preserved when available
+                            Existing task status and complexity preserved when
+                            available
                           </div>
                         </div>
                         <div className="rounded-xl border border-dashed border-border bg-muted/15 px-3 py-3 text-sm text-muted-foreground">
-                          Structured output remains reviewable before anything is saved.
+                          Structured output remains reviewable before anything
+                          is saved.
                         </div>
                       </div>
                     </div>
@@ -823,10 +918,16 @@ export default function Dashboard() {
                   <DashboardCard
                     title="Extraction Results"
                     description="Review structured tasks extracted for the current project."
-                    action={<StatusBadge tone={savedTasks.length > 0 ? 'success' : 'neutral'}>{savedTasks.length} saved</StatusBadge>}
+                    action={
+                      <StatusBadge
+                        tone={savedTasks.length > 0 ? "success" : "neutral"}
+                      >
+                        {savedTasks.length} saved
+                      </StatusBadge>
+                    }
                   >
                     {loadingSavedTasks ? (
-                      renderLoadingState('Retrieving tasks...')
+                      renderLoadingState("Retrieving tasks...")
                     ) : savedTasks.length === 0 ? (
                       <EmptyState
                         icon={Layers3}
@@ -836,19 +937,36 @@ export default function Dashboard() {
                     ) : (
                       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2 max-h-[520px] overflow-y-auto pr-1">
                         {savedTasks.map((t, idx) => (
-                          <article key={idx} className="rounded-2xl border border-border bg-background p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-ring/40 hover:shadow-sm">
+                          <article
+                            key={idx}
+                            className="rounded-2xl border border-border bg-background p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-ring/40 hover:shadow-sm"
+                          >
                             <div className="flex items-start justify-between gap-3">
                               <div className="min-w-0 space-y-1">
-                                <h3 className="truncate text-sm font-semibold text-foreground">{t.title}</h3>
-                                <p className="text-sm leading-6 text-muted-foreground">{t.description}</p>
+                                <h3 className="truncate text-sm font-semibold text-foreground">
+                                  {t.title}
+                                </h3>
+                                <p className="text-sm leading-6 text-muted-foreground">
+                                  {t.description}
+                                </p>
                               </div>
                               <div className="flex shrink-0 flex-col items-end gap-2">
                                 <StatusBadge
-                                  tone={t.complexity === 'high' ? 'danger' : t.complexity === 'medium' ? 'warning' : 'success'}
+                                  tone={
+                                    t.complexity === "high"
+                                      ? "danger"
+                                      : t.complexity === "medium"
+                                        ? "warning"
+                                        : "success"
+                                  }
                                 >
                                   {t.complexity}
                                 </StatusBadge>
-                                {t.status ? <StatusBadge tone="info">{t.status}</StatusBadge> : null}
+                                {t.status ? (
+                                  <StatusBadge tone="info">
+                                    {t.status}
+                                  </StatusBadge>
+                                ) : null}
                               </div>
                             </div>
                             <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3 text-xs text-muted-foreground">
@@ -872,7 +990,9 @@ export default function Dashboard() {
                   description="Review, refine, and approve extracted tasks before saving them to the database."
                   action={
                     reviewTasks.length > 0 ? (
-                      <StatusBadge tone="info">{reviewTasks.length} candidates</StatusBadge>
+                      <StatusBadge tone="info">
+                        {reviewTasks.length} candidates
+                      </StatusBadge>
                     ) : (
                       <StatusBadge tone="neutral">Empty</StatusBadge>
                     )
@@ -890,18 +1010,26 @@ export default function Dashboard() {
                       <div className="rounded-2xl border border-border bg-muted/20 px-4 py-3">
                         <div className="flex items-center justify-between gap-3">
                           <div>
-                            <p className="text-sm font-semibold text-foreground">Task review queue</p>
+                            <p className="text-sm font-semibold text-foreground">
+                              Task review queue
+                            </p>
                             <p className="text-sm text-muted-foreground">
-                              Each extracted item can be reviewed, edited, and approved before saving.
+                              Each extracted item can be reviewed, edited, and
+                              approved before saving.
                             </p>
                           </div>
-                          <StatusBadge tone="info">{reviewTasks.length} tasks</StatusBadge>
+                          <StatusBadge tone="info">
+                            {reviewTasks.length} tasks
+                          </StatusBadge>
                         </div>
                       </div>
 
                       <div className="flex-1 space-y-4 overflow-y-auto pr-1">
                         {reviewTasks.map((task, idx) => (
-                          <article key={idx} className="rounded-2xl border border-border bg-card p-4 transition-colors duration-200 hover:border-ring/40 sm:p-5">
+                          <article
+                            key={idx}
+                            className="rounded-2xl border border-border bg-card p-4 transition-colors duration-200 hover:border-ring/40 sm:p-5"
+                          >
                             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                               <div className="min-w-0 flex-1 space-y-3">
                                 <div className="space-y-1.5">
@@ -911,7 +1039,13 @@ export default function Dashboard() {
                                   <input
                                     type="text"
                                     value={task.title}
-                                    onChange={(e) => updateExtractedTask(idx, 'title', e.target.value)}
+                                    onChange={(e) =>
+                                      updateExtractedTask(
+                                        idx,
+                                        "title",
+                                        e.target.value,
+                                      )
+                                    }
                                     className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm font-medium text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
                                   />
                                 </div>
@@ -922,7 +1056,13 @@ export default function Dashboard() {
                                   </label>
                                   <textarea
                                     value={task.description}
-                                    onChange={(e) => updateExtractedTask(idx, 'description', e.target.value)}
+                                    onChange={(e) =>
+                                      updateExtractedTask(
+                                        idx,
+                                        "description",
+                                        e.target.value,
+                                      )
+                                    }
                                     rows={4}
                                     className="min-h-[116px] w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-7 text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
                                   />
@@ -936,7 +1076,14 @@ export default function Dashboard() {
                                   </label>
                                   <select
                                     value={task.complexity}
-                                    onChange={(e) => updateExtractedTask(idx, 'complexity', e.target.value as StagedTask['complexity'])}
+                                    onChange={(e) =>
+                                      updateExtractedTask(
+                                        idx,
+                                        "complexity",
+                                        e.target
+                                          .value as StagedTask["complexity"],
+                                      )
+                                    }
                                     className="mt-2 h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
                                   >
                                     <option value="low">Low</option>
@@ -952,16 +1099,34 @@ export default function Dashboard() {
                                   <input
                                     type="text"
                                     value={task.category}
-                                    onChange={(e) => updateExtractedTask(idx, 'category', e.target.value)}
+                                    onChange={(e) =>
+                                      updateExtractedTask(
+                                        idx,
+                                        "category",
+                                        e.target.value,
+                                      )
+                                    }
                                     className="mt-2 h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
                                   />
                                 </div>
 
                                 <div className="flex flex-wrap gap-2 lg:pt-1">
-                                  <StatusBadge tone={task.complexity === 'high' ? 'danger' : task.complexity === 'medium' ? 'warning' : 'success'}>
+                                  <StatusBadge
+                                    tone={
+                                      task.complexity === "high"
+                                        ? "danger"
+                                        : task.complexity === "medium"
+                                          ? "warning"
+                                          : "success"
+                                    }
+                                  >
                                     {task.complexity}
                                   </StatusBadge>
-                                  {task.status ? <StatusBadge tone="info">{task.status}</StatusBadge> : null}
+                                  {task.status ? (
+                                    <StatusBadge tone="info">
+                                      {task.status}
+                                    </StatusBadge>
+                                  ) : null}
                                 </div>
                               </div>
                             </div>
@@ -983,7 +1148,11 @@ export default function Dashboard() {
                           disabled={savingTasks || reviewTasks.length === 0}
                           className="h-12 rounded-xl bg-foreground text-background hover:bg-zinc-800"
                         >
-                          {savingTasks ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                          {savingTasks ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Check className="h-4 w-4" />
+                          )}
                           Approve & Save to DB
                         </Button>
                       </div>
@@ -993,27 +1162,45 @@ export default function Dashboard() {
               </div>
             )}
 
-            {activeTab === 'phase2' && (
+            {activeTab === "phase2" && (
               <div className="space-y-6">
                 <DashboardCard
                   title="Scope Comparison Workspace"
                   description="Review the approved baseline, prepare a new request, and compare the two in a calm workspace."
-                  action={<StatusBadge tone="info">Phase 2 workspace</StatusBadge>}
+                  action={
+                    <StatusBadge tone="info">Phase 2 workspace</StatusBadge>
+                  }
                 >
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
                     {[
-                      { label: 'New Requirements', value: comparisonCounts?.added ?? '—' },
-                      { label: 'Modified', value: comparisonCounts?.modified ?? '—' },
-                      { label: 'Removed', value: comparisonCounts?.removed ?? '—' },
-                      { label: 'Estimated Extra Hours', value: '—' },
-                      { label: 'Estimated Extra Cost', value: '—' },
+                      {
+                        label: "New Requirements",
+                        value: comparisonCounts?.added ?? "—",
+                      },
+                      {
+                        label: "Modified",
+                        value: comparisonCounts?.modified ?? "—",
+                      },
+                      {
+                        label: "Removed",
+                        value: comparisonCounts?.removed ?? "—",
+                      },
+                      { label: "Estimated Extra Hours", value: "—" },
+                      { label: "Estimated Extra Cost", value: "—" },
                     ].map((metric) => (
-                      <div key={metric.label} className="rounded-2xl border border-border bg-background p-4">
+                      <div
+                        key={metric.label}
+                        className="rounded-2xl border border-border bg-background p-4"
+                      >
                         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                           {metric.label}
                         </p>
-                        <p className="mt-3 text-2xl font-semibold tracking-tight text-foreground">{metric.value}</p>
-                        <p className="mt-1 text-xs text-muted-foreground">Pending comparison</p>
+                        <p className="mt-3 text-2xl font-semibold tracking-tight text-foreground">
+                          {metric.value}
+                        </p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Pending comparison
+                        </p>
                       </div>
                     ))}
                   </div>
@@ -1026,7 +1213,7 @@ export default function Dashboard() {
                     action={<StatusBadge tone="neutral">Read only</StatusBadge>}
                   >
                     {loadingBaseline ? (
-                      renderLoadingState('Loading baseline requirements...')
+                      renderLoadingState("Loading baseline requirements...")
                     ) : baselineItems.length === 0 ? (
                       <EmptyState
                         icon={FileText}
@@ -1036,7 +1223,10 @@ export default function Dashboard() {
                     ) : (
                       <div className="space-y-3 max-h-[560px] overflow-y-auto pr-1">
                         {baselineItems.map((item, idx) => (
-                          <article key={item.id} className="rounded-2xl border border-border bg-background p-4">
+                          <article
+                            key={item.id}
+                            className="rounded-2xl border border-border bg-background p-4"
+                          >
                             <div className="flex items-start justify-between gap-3">
                               <div className="space-y-1">
                                 <h3 className="text-sm font-semibold text-foreground">
@@ -1050,12 +1240,18 @@ export default function Dashboard() {
                             </div>
                             {item.exclusions && (
                               <div className="mt-3 rounded-xl border border-border bg-muted/20 px-3 py-2 text-sm text-muted-foreground">
-                                <span className="font-semibold text-foreground">Exclusions:</span> {item.exclusions}
+                                <span className="font-semibold text-foreground">
+                                  Exclusions:
+                                </span>{" "}
+                                {item.exclusions}
                               </div>
                             )}
                             {item.assumptions && (
                               <div className="mt-2 rounded-xl border border-border bg-muted/20 px-3 py-2 text-sm text-muted-foreground">
-                                <span className="font-semibold text-foreground">Assumptions:</span> {item.assumptions}
+                                <span className="font-semibold text-foreground">
+                                  Assumptions:
+                                </span>{" "}
+                                {item.assumptions}
                               </div>
                             )}
                           </article>
@@ -1067,16 +1263,27 @@ export default function Dashboard() {
                   <DashboardCard
                     title="Upload New Client Request"
                     description="Upload a document or paste raw text to compare against the baseline."
-                    action={<StatusBadge tone={baselineItems.length > 0 ? 'info' : 'warning'}>{baselineItems.length > 0 ? 'Ready' : 'Add baseline first'}</StatusBadge>}
+                    action={
+                      <StatusBadge
+                        tone={baselineItems.length > 0 ? "info" : "warning"}
+                      >
+                        {baselineItems.length > 0
+                          ? "Ready"
+                          : "Add baseline first"}
+                      </StatusBadge>
+                    }
                   >
                     <div className="space-y-4">
                       <div className="rounded-3xl border border-dashed border-border bg-muted/20 px-5 py-8 text-center">
                         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-background text-indigo-600">
                           <FileText className="h-5 w-5" />
                         </div>
-                        <h3 className="text-sm font-semibold text-foreground">Drag and drop a client email or document</h3>
+                        <h3 className="text-sm font-semibold text-foreground">
+                          Drag and drop a client email or document
+                        </h3>
                         <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
-                          Drop a file here or browse from your device. You can also paste text below.
+                          Drop a file here or browse from your device. You can
+                          also paste text below.
                         </p>
                         <div className="mt-5 flex justify-center">
                           <Button
@@ -1142,28 +1349,35 @@ export default function Dashboard() {
                       <div className="space-y-3">
                         {[
                           {
-                            label: 'Added Requirements',
-                            tone: 'success' as const,
+                            label: "Added Requirements",
+                            tone: "success" as const,
                             items: comparisonResult?.added || [],
-                            emptyText: 'No added requirements yet.',
+                            emptyText: "No added requirements yet.",
                           },
                           {
-                            label: 'Modified Requirements',
-                            tone: 'warning' as const,
+                            label: "Modified Requirements",
+                            tone: "warning" as const,
                             items: comparisonResult?.modified || [],
-                            emptyText: 'No modified requirements yet.',
+                            emptyText: "No modified requirements yet.",
                           },
                           {
-                            label: 'Removed Requirements',
-                            tone: 'danger' as const,
+                            label: "Removed Requirements",
+                            tone: "danger" as const,
                             items: comparisonResult?.removed || [],
-                            emptyText: 'No removed requirements yet.',
+                            emptyText: "No removed requirements yet.",
                           },
                         ].map((section) => (
-                          <section key={section.label} className="rounded-2xl border border-border bg-background p-4">
+                          <section
+                            key={section.label}
+                            className="rounded-2xl border border-border bg-background p-4"
+                          >
                             <div className="flex items-center justify-between gap-3">
-                              <h3 className="text-sm font-semibold text-foreground">{section.label}</h3>
-                              <StatusBadge tone={section.tone}>{section.label.split(' ')[0]}</StatusBadge>
+                              <h3 className="text-sm font-semibold text-foreground">
+                                {section.label}
+                              </h3>
+                              <StatusBadge tone={section.tone}>
+                                {section.label.split(" ")[0]}
+                              </StatusBadge>
                             </div>
                             {section.items.length === 0 ? (
                               <div className="mt-3 rounded-xl border border-dashed border-border bg-muted/20 px-3 py-3 text-sm leading-6 text-muted-foreground">
@@ -1176,9 +1390,11 @@ export default function Dashboard() {
                                     key={idx}
                                     className="rounded-xl border border-border bg-muted/20 px-3 py-3 text-sm leading-6 text-foreground"
                                   >
-                                    {'baseline' in item ? (
+                                    {"baseline" in item ? (
                                       <>
-                                        <div className="font-medium">{item.task.title}</div>
+                                        <div className="font-medium">
+                                          {item.task.title}
+                                        </div>
                                         <div className="mt-1 text-muted-foreground">
                                           Baseline: {item.baseline.deliverable}
                                         </div>
@@ -1206,16 +1422,26 @@ export default function Dashboard() {
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                       <div className="max-w-2xl">
                         <p className="text-sm text-muted-foreground">
-                          This button keeps the current draft generation behavior and is placed at the bottom of Phase 2 as requested.
+                          This button keeps the current draft generation
+                          behavior and is placed at the bottom of Phase 2 as
+                          requested.
                         </p>
                       </div>
                       <Button
                         type="button"
                         onClick={generateDraft}
-                        disabled={draftingEmail || !scopeEvent || scopeEvent.verdict !== 'out_of_scope'}
+                        disabled={
+                          draftingEmail ||
+                          !scopeEvent ||
+                          scopeEvent.verdict !== "out_of_scope"
+                        }
                         className="h-12 rounded-xl bg-foreground px-5 text-background hover:bg-zinc-800"
                       >
-                        {draftingEmail ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
+                        {draftingEmail ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Mail className="h-4 w-4" />
+                        )}
                         Generate Client Response
                       </Button>
                     </div>
@@ -1228,7 +1454,8 @@ export default function Dashboard() {
                               Generated response draft
                             </h3>
                             <p className="text-sm text-muted-foreground">
-                              Review and copy the response before sending it to the client.
+                              Review and copy the response before sending it to
+                              the client.
                             </p>
                           </div>
                           <Button
@@ -1254,7 +1481,9 @@ export default function Dashboard() {
                           <div className="mb-3 border-b border-border pb-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                             Subject: {emailDraft.subject}
                           </div>
-                          <pre className="whitespace-pre-wrap font-sans">{emailDraft.body}</pre>
+                          <pre className="whitespace-pre-wrap font-sans">
+                            {emailDraft.body}
+                          </pre>
                         </div>
                       </div>
                     )}
@@ -1279,5 +1508,5 @@ export default function Dashboard() {
         )}
       </main>
     </div>
-  )
+  );
 }
