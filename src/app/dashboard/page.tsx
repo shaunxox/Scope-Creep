@@ -45,6 +45,13 @@ interface BaselineItem {
   assumptions: string | null;
 }
 
+interface ComparisonResult {
+  added: StagedTask[];
+  modified: { baseline: BaselineItem; task: StagedTask }[];
+  removed: BaselineItem[];
+  message: string | null;
+}
+
 interface ScopeEvent {
   id: string;
   request_text: string;
@@ -1399,8 +1406,10 @@ export default function Dashboard() {
                                           Baseline: {item.baseline.deliverable}
                                         </div>
                                       </>
-                                    ) : (
+                                    ) : "title" in item ? (
                                       <div>{item.title}</div>
+                                    ) : (
+                                      <div>{item.deliverable}</div>
                                     )}
                                   </div>
                                 ))}
