@@ -1,5 +1,5 @@
-import type { Metadata } from "next"
-import Link from "next/link"
+import type { Metadata } from "next";
+import Link from "next/link";
 import {
   ArrowRight,
   BadgeCheck,
@@ -11,21 +11,21 @@ import {
   ShieldAlert,
   Sparkles,
   Workflow,
-} from "lucide-react"
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Scope Creep",
   description:
     "AI-powered scope management middleware for freelancers, agencies, and small teams.",
-}
+};
 
 const problemItems = [
   "Client messages arrive as scattered notes, voice-of-the-moment edits, and hidden requirements.",
   "Scope gets blurred before anyone agrees what is actually included.",
   "Unpaid work starts to accumulate because the change is not captured early enough.",
-]
+];
 
 const workflowSteps = [
   "Client Request",
@@ -34,7 +34,7 @@ const workflowSteps = [
   "Baseline",
   "Scope Check",
   "Professional Email",
-]
+];
 
 const featureCards = [
   {
@@ -58,7 +58,7 @@ const featureCards = [
     description: "Draft a calm, client-ready response when scope expands.",
     icon: Mail,
   },
-]
+];
 
 const benefitCards = [
   {
@@ -73,16 +73,16 @@ const benefitCards = [
     title: "Communicate Clearly",
     description: "Keep client conversations professional, calm, and precise.",
   },
-]
+];
 
 function SectionHeading({
   eyebrow,
   title,
   description,
 }: {
-  eyebrow: string
-  title: string
-  description: string
+  eyebrow: string;
+  title: string;
+  description: string;
 }) {
   return (
     <div className="max-w-2xl space-y-3">
@@ -96,7 +96,7 @@ function SectionHeading({
         {description}
       </p>
     </div>
-  )
+  );
 }
 
 function FeatureCard({
@@ -104,9 +104,9 @@ function FeatureCard({
   description,
   icon: Icon,
 }: {
-  title: string
-  description: string
-  icon: React.ComponentType<{ className?: string }>
+  title: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
 }) {
   return (
     <article className="rounded-2xl border border-border bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-ring/40 hover:shadow-sm">
@@ -114,25 +114,29 @@ function FeatureCard({
         <Icon className="h-4 w-4" />
       </div>
       <h3 className="text-base font-semibold text-foreground">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+        {description}
+      </p>
     </article>
-  )
+  );
 }
 
 function BenefitCard({
   title,
   description,
 }: {
-  title: string
-  description: string
+  title: string;
+  description: string;
 }) {
   return (
     <article className="rounded-2xl border border-border bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-ring/40 hover:shadow-sm">
       <CheckCircle2 className="mb-4 h-5 w-5 text-emerald-600" />
       <h3 className="text-base font-semibold text-foreground">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+        {description}
+      </p>
     </article>
-  )
+  );
 }
 
 function WorkflowStep({
@@ -140,9 +144,9 @@ function WorkflowStep({
   index,
   isLast = false,
 }: {
-  label: string
-  index: number
-  isLast?: boolean
+  label: string;
+  index: number;
+  isLast?: boolean;
 }) {
   return (
     <div className="flex items-center gap-4 rounded-2xl border border-border bg-card px-4 py-3">
@@ -154,7 +158,7 @@ function WorkflowStep({
       </div>
       {!isLast ? <Workflow className="h-4 w-4 text-muted-foreground" /> : null}
     </div>
-  )
+  );
 }
 
 export default function Home() {
@@ -179,7 +183,10 @@ export default function Home() {
             </div>
           </Link>
 
-          <nav aria-label="Primary" className="hidden items-center gap-6 md:flex">
+          <nav
+            aria-label="Primary"
+            className="hidden items-center gap-6 md:flex"
+          >
             <a
               href="#problem"
               className="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
@@ -207,12 +214,19 @@ export default function Home() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
-              <Link href="/login">Login</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link href="/login">Get Started</Link>
-            </Button>
+            <Link href="/login">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden sm:inline-flex"
+              >
+                Login
+              </Button>
+            </Link>
+
+            <Link href="/login">
+              <Button size="sm">Get Started</Button>
+            </Link>
           </div>
         </div>
       </header>
@@ -230,24 +244,29 @@ export default function Home() {
                 Turn messy client requests into clear scope.
               </h1>
               <p className="max-w-xl text-base leading-8 text-muted-foreground sm:text-lg">
-                Scope Creep helps freelancers, agencies, and small teams extract tasks, establish a baseline, detect scope creep, and draft professional emails before unpaid work spreads.
+                Scope Creep helps freelancers, agencies, and small teams extract
+                tasks, establish a baseline, detect scope creep, and draft
+                professional emails before unpaid work spreads.
               </p>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg" className="h-11 px-5">
-                <Link href="/login">
+              <Link href="/login">
+                <Button size="lg" className="h-11 px-5">
                   Get Started
                   <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="h-11 px-5">
-                <a href="#workflow">See how it works</a>
-              </Button>
+                </Button>
+              </Link>
+              <a href="#workflow">
+                <Button variant="outline" size="lg" className="h-11 px-5">
+                  See how it works
+                </Button>
+              </a>
             </div>
 
             <p className="text-sm text-muted-foreground">
-              Used to keep requirements organized, scope visible, and client communication professional.
+              Used to keep requirements organized, scope visible, and client
+              communication professional.
             </p>
           </div>
 
@@ -255,7 +274,9 @@ export default function Home() {
             <article className="rounded-3xl border border-border bg-card p-5 shadow-sm">
               <div className="flex items-center justify-between border-b border-border pb-4">
                 <div>
-                  <p className="text-sm font-medium text-foreground">Project workspace</p>
+                  <p className="text-sm font-medium text-foreground">
+                    Project workspace
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     A calm view of scope, tasks, and client requests
                   </p>
@@ -272,7 +293,8 @@ export default function Home() {
                     Client request
                   </div>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    "Can we also add payment support and update the dashboard layout?"
+                    "Can we also add payment support and update the dashboard
+                    layout?"
                   </p>
                 </div>
 
@@ -281,19 +303,25 @@ export default function Home() {
                     <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
                       Extracted
                     </p>
-                    <p className="mt-2 text-sm font-medium text-foreground">3 tasks</p>
+                    <p className="mt-2 text-sm font-medium text-foreground">
+                      3 tasks
+                    </p>
                   </div>
                   <div className="rounded-2xl border border-border bg-background p-4">
                     <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
                       Baseline
                     </p>
-                    <p className="mt-2 text-sm font-medium text-foreground">Set</p>
+                    <p className="mt-2 text-sm font-medium text-foreground">
+                      Set
+                    </p>
                   </div>
                   <div className="rounded-2xl border border-border bg-background p-4">
                     <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
                       Scope
                     </p>
-                    <p className="mt-2 text-sm font-medium text-foreground">Needs review</p>
+                    <p className="mt-2 text-sm font-medium text-foreground">
+                      Needs review
+                    </p>
                   </div>
                 </div>
 
@@ -303,8 +331,8 @@ export default function Home() {
                     Scope note
                   </div>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    The product keeps the request visible, structured, and ready for a
-                    professional response.
+                    The product keeps the request visible, structured, and ready
+                    for a professional response.
                   </p>
                 </div>
               </div>
@@ -322,7 +350,9 @@ export default function Home() {
 
             <div className="mt-10 grid gap-4 lg:grid-cols-2">
               <article className="rounded-2xl border border-border bg-card p-6">
-                <p className="text-sm font-semibold text-foreground">Without Scope Creep</p>
+                <p className="text-sm font-semibold text-foreground">
+                  Without Scope Creep
+                </p>
                 <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
                   {problemItems.map((item) => (
                     <li key={item} className="flex gap-3">
@@ -334,7 +364,9 @@ export default function Home() {
               </article>
 
               <article className="rounded-2xl border border-border bg-card p-6">
-                <p className="text-sm font-semibold text-foreground">With Scope Creep</p>
+                <p className="text-sm font-semibold text-foreground">
+                  With Scope Creep
+                </p>
                 <div className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
                   <div className="rounded-xl border border-border bg-muted/35 p-4">
                     Requirements are extracted into tasks.
@@ -362,8 +394,8 @@ export default function Home() {
             <article className="rounded-2xl border border-border bg-card p-6">
               <p className="text-sm font-semibold text-foreground">Before</p>
               <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                Free-form client messages, hidden assumptions, and no clear point of
-                comparison for new requests.
+                Free-form client messages, hidden assumptions, and no clear
+                point of comparison for new requests.
               </p>
             </article>
             <article className="rounded-2xl border border-border bg-card p-6">
@@ -376,7 +408,10 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="workflow" className="border-y border-border/60 bg-muted/20">
+        <section
+          id="workflow"
+          className="border-y border-border/60 bg-muted/20"
+        >
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
             <SectionHeading
               eyebrow="Workflow"
@@ -397,7 +432,10 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="features" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <section
+          id="features"
+          className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20"
+        >
           <SectionHeading
             eyebrow="Features"
             title="The core capabilities, without clutter."
@@ -416,7 +454,10 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="benefits" className="border-t border-border/60 bg-muted/20">
+        <section
+          id="benefits"
+          className="border-t border-border/60 bg-muted/20"
+        >
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
             <SectionHeading
               eyebrow="Benefits"
@@ -444,7 +485,8 @@ export default function Home() {
                   Call to action
                 </p>
                 <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-                  Create your first project and start managing scope with clarity.
+                  Create your first project and start managing scope with
+                  clarity.
                 </h2>
                 <p className="text-sm leading-7 text-muted-foreground sm:text-base">
                   Set up a workspace, paste a request, and see how Scope Creep
@@ -452,12 +494,12 @@ export default function Home() {
                 </p>
               </div>
 
-              <Button asChild size="lg" className="h-11 px-6">
-                <Link href="/login">
-                  Get Started
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
+              <Link href="/login">
+  <Button size="lg" className="h-11 px-6">
+    Get Started
+    <ArrowRight className="h-4 w-4" />
+  </Button>
+</Link>
             </div>
           </article>
         </section>
@@ -499,5 +541,5 @@ export default function Home() {
         </div>
       </footer>
     </div>
-  )
+  );
 }

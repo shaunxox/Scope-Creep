@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -276,7 +276,7 @@ export default function Dashboard() {
     setTimeout(() => setErrorMsg(""), 7000);
   };
 
-  const fetchProjects = async () => {
+  async function fetchProjects() {
     setLoadingProjects(true);
     try {
       const res = await fetch("/api/projects");
@@ -294,7 +294,7 @@ export default function Dashboard() {
     } finally {
       setLoadingProjects(false);
     }
-  };
+  }
 
   const createProject = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -487,9 +487,9 @@ export default function Dashboard() {
         (item) => [normalizeTitle(item.deliverable), item] as const,
       ),
     );
-   const extractedByTitle = new Map(
-  tasks.map((task) => [normalizeTitle(task.title), task] as const)
-);
+    const extractedByTitle = new Map(
+      tasks.map((task) => [normalizeTitle(task.title), task] as const),
+    );
 
     const added = tasks.filter(
       (task) => !baselineByTitle.has(normalizeTitle(task.title)),
