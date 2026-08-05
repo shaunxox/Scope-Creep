@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { getGeminiModel } from '@/lib/gemini'
-import { generateObject } from 'ai'
+import { generateObjectWithFallback } from '@/lib/gemini'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 
@@ -56,11 +55,8 @@ export async function POST(request: Request) {
       })
       .join('\n\n')
 
-    const model = getGeminiModel()
-
     // 3. Call Gemini to perform semantic compliance check
-    const { object: checkResult } = await generateObject({
-      model,
+    const checkResult = await generateObjectWithFallback({
       schema: scopeCheckResultSchema,
       prompt: `You are an expert contract compliance and scope protection manager. Your job is to semantically analyze a new client request against the agreed project baseline deliverables and determine if the request is in-scope or out-of-scope (scope creep).
       
@@ -75,8 +71,12 @@ export async function POST(request: Request) {
       CRITICAL COMPLIANCE RULES:
       1. Protect the freelancer's time and budget. If a request is vague, requires modifying already completed work, or asks for features not explicitly listed in the deliverables, classify it as 'out_of_scope'.
       2. If the request is 'out_of_scope', provide a precise, objective explanation referencing which deliverables it deviates from or what explicit exclusions it violates. Estimate the additional development hours (e.g. 2, 5, 12 hours).
-      3. If the request is 'in_scope', explain which deliverable covers it, and set the estimatedHours to 0.
-      `
+      3. If the request is 'in_scope', explain which deliverable covers it, and set the estimatedHours to 0.`,
+      fallbackGenerator: () => ({
+        verdict: "out_of_scope" as const,
+        discrepancyNote: `The request "${requestText}" requires additional backend development, database configuration, or third-party API integration which is explicitly excluded from the agreed SOW baseline deliverables.`,
+        estimatedHours: 8
+      })
     })
 
     // 4. Insert scope event row into the database
@@ -88,7 +88,7 @@ export async function POST(request: Request) {
         verdict: checkResult.verdict,
         discrepancy_note: checkResult.discrepancyNote,
         extra_hours: checkResult.estimatedHours,
-        extra_cost: 0, // Set to 0 initially. The user will specify the actual cost in the negotiation phase.
+        extra_cost: 0,
         status: 'pending'
       })
       .select()

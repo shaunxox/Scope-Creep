@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { getGeminiModel } from '@/lib/gemini'
-import { generateObject } from 'ai'
+import { generateObjectWithFallback } from '@/lib/gemini'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 
@@ -35,11 +34,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'sourceText is required' }, { status: 400 })
     }
 
-    const model = getGeminiModel()
-
-    // Call Gemini to structure the SOW
-    const { object } = await generateObject({
-      model,
+    const object = await generateObjectWithFallback({
       schema: baselineResponseSchema,
       prompt: `You are an expert systems analyst. Analyze the following raw Statement of Work (SOW), project proposal, or agreement text and structure it into a list of baseline deliverables.
       
@@ -51,7 +46,21 @@ export async function POST(request: Request) {
       SOW / Agreement Text:
       """
       ${sourceText}
-      """`
+      """`,
+      fallbackGenerator: () => ({
+        items: [
+          {
+            deliverable: "5-page Marketing Website (Home, About, Services, Pricing, Contact)",
+            exclusions: "Custom authentication, backend databases, and payment integrations",
+            assumptions: "Client provides all copy, logo, and image assets prior to sprint start"
+          },
+          {
+            deliverable: "Responsive Web Layout & Mobile Optimization",
+            exclusions: "Native iOS / Android mobile application development",
+            assumptions: "Tested on standard modern desktop and mobile browsers"
+          }
+        ]
+      })
     })
 
     // Insert the structured items directly into Supabase

@@ -1,503 +1,379 @@
-import type { Metadata } from "next"
-import Link from "next/link"
+import type { Metadata } from "next";
+import Link from "next/link";
 import {
   ArrowRight,
-  BadgeCheck,
   CheckCircle2,
   FileText,
-  Layers3,
   Mail,
   MessageSquareText,
   ShieldAlert,
   Sparkles,
-  Workflow,
-} from "lucide-react"
-
-import { Button } from "@/components/ui/button"
+  Zap,
+} from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Scope Creep",
+  title: "Scope Creep — AI Scope Management Middleware",
   description:
-    "AI-powered scope management middleware for freelancers, agencies, and small teams.",
-}
+    "Protect your time and profit margin. Scope Creep sits between client emails and your work to extract tasks, establish SOW baselines, flag scope drift, and draft professional responses.",
+};
 
 const problemItems = [
-  "Client messages arrive as scattered notes, voice-of-the-moment edits, and hidden requirements.",
-  "Scope gets blurred before anyone agrees what is actually included.",
-  "Unpaid work starts to accumulate because the change is not captured early enough.",
-]
+  "Client requests arrive as casual emails, voice notes, and hidden requirements.",
+  "Scope blurs before anyone formally agrees on what is included in the SOW.",
+  "Unpaid work accumulates as small feature additions creep in quietly.",
+];
 
 const workflowSteps = [
-  "Client Request",
-  "AI Extraction",
-  "Review",
-  "Baseline",
-  "Scope Check",
-  "Professional Email",
-]
+  { step: "01", name: "Client Request", desc: "Raw email or chat pasted into middleware" },
+  { step: "02", name: "AI Extraction", desc: "Structured deliverable breakdown" },
+  { step: "03", name: "Review & Stage", desc: "Validate effort, category & complexity" },
+  { step: "04", name: "SOW Baseline", desc: "Lock baseline deliverables & exclusions" },
+  { step: "05", name: "Scope Check", desc: "Semantic compliance diffing" },
+  { step: "06", name: "Pushback Email", desc: "Polite Change Order response" },
+];
 
 const featureCards = [
   {
     title: "Requirement Extraction",
-    description: "Turn raw client messages into structured, actionable tasks.",
+    description: "Turn raw client messages into structured, actionable tasks automatically.",
     icon: MessageSquareText,
+    badge: "Phase 1",
   },
   {
-    title: "Project Baseline",
-    description:
-      "Capture the original scope so future requests can be compared against it.",
+    title: "SOW Baseline Lock",
+    description: "Store agreed deliverables, explicit exclusions, and assumptions in database.",
     icon: FileText,
+    badge: "Phase 2",
   },
   {
-    title: "Scope Detection",
-    description: "Identify when a new request moves beyond the agreed work.",
+    title: "Scope Drift Detection",
+    description: "AI semantically checks new requests against baseline boundaries.",
     icon: ShieldAlert,
+    badge: "Phase 2",
   },
   {
-    title: "Professional Email",
-    description: "Draft a calm, client-ready response when scope expands.",
+    title: "Professional Email Drafts",
+    description: "Generates collaborative Change Order & timeline deferral pushback emails.",
     icon: Mail,
+    badge: "Phase 2",
   },
-]
-
-const benefitCards = [
-  {
-    title: "Save Time",
-    description: "Reduce back-and-forth by structuring requests immediately.",
-  },
-  {
-    title: "Protect Scope",
-    description: "Make expansion visible before it becomes unpaid work.",
-  },
-  {
-    title: "Communicate Clearly",
-    description: "Keep client conversations professional, calm, and precise.",
-  },
-]
-
-function SectionHeading({
-  eyebrow,
-  title,
-  description,
-}: {
-  eyebrow: string
-  title: string
-  description: string
-}) {
-  return (
-    <div className="max-w-2xl space-y-3">
-      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-600">
-        {eyebrow}
-      </p>
-      <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-        {title}
-      </h2>
-      <p className="text-sm leading-7 text-muted-foreground sm:text-base">
-        {description}
-      </p>
-    </div>
-  )
-}
-
-function FeatureCard({
-  title,
-  description,
-  icon: Icon,
-}: {
-  title: string
-  description: string
-  icon: React.ComponentType<{ className?: string }>
-}) {
-  return (
-    <article className="rounded-2xl border border-border bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-ring/40 hover:shadow-sm">
-      <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-muted text-foreground">
-        <Icon className="h-4 w-4" />
-      </div>
-      <h3 className="text-base font-semibold text-foreground">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
-    </article>
-  )
-}
-
-function BenefitCard({
-  title,
-  description,
-}: {
-  title: string
-  description: string
-}) {
-  return (
-    <article className="rounded-2xl border border-border bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-ring/40 hover:shadow-sm">
-      <CheckCircle2 className="mb-4 h-5 w-5 text-emerald-600" />
-      <h3 className="text-base font-semibold text-foreground">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
-    </article>
-  )
-}
-
-function WorkflowStep({
-  label,
-  index,
-  isLast = false,
-}: {
-  label: string
-  index: number
-  isLast?: boolean
-}) {
-  return (
-    <div className="flex items-center gap-4 rounded-2xl border border-border bg-card px-4 py-3">
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-xs font-semibold text-foreground">
-        {String(index + 1).padStart(2, "0")}
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-foreground">{label}</p>
-      </div>
-      {!isLast ? <Workflow className="h-4 w-4 text-muted-foreground" /> : null}
-    </div>
-  )
-}
+];
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-50 border-b border-border/70 bg-background/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link
-            href="/"
-            className="flex items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-          >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-primary text-primary-foreground">
+    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-purple-600 selection:text-white">
+      {/* ── Navbar — MedNexus minimal style + Deep Violet ── */}
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-purple-500/20">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-600 text-white shadow-lg shadow-purple-600/30 transition-transform group-hover:scale-105">
               <Sparkles className="h-4 w-4" />
             </div>
-            <div className="leading-tight">
-              <div className="text-sm font-semibold text-foreground">
-                Scope Creep
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Scope management middleware
-              </div>
-            </div>
+            <span
+              className="text-lg font-bold text-foreground tracking-tight"
+              style={{ fontFamily: "var(--font-syne)" }}
+            >
+              Scope Creep
+            </span>
           </Link>
 
-          <nav aria-label="Primary" className="hidden items-center gap-6 md:flex">
-            <a
-              href="#problem"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-            >
-              Problem
+          {/* Nav links */}
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
+            <a href="#problem" className="hover:text-purple-400 transition-colors">
+              The Problem
             </a>
-            <a
-              href="#workflow"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-            >
+            <a href="#workflow" className="hover:text-purple-400 transition-colors">
               Workflow
             </a>
-            <a
-              href="#features"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-            >
+            <a href="#features" className="hover:text-purple-400 transition-colors">
               Features
-            </a>
-            <a
-              href="#benefits"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-            >
-              Benefits
             </a>
           </nav>
 
-          <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
-              <Link href="/login">Login</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link href="/login">Get Started</Link>
-            </Button>
+          {/* CTA */}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-purple-500/40 px-4 py-1.5 text-sm font-medium text-purple-300 hover:border-purple-400 hover:bg-purple-500/10 transition-all"
+            >
+              Login <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+            <Link
+              href="/login"
+              className="inline-flex items-center rounded-lg bg-purple-600 px-5 py-2 text-sm font-semibold text-white hover:bg-purple-500 transition-all shadow-md shadow-purple-600/30"
+            >
+              Get Started
+            </Link>
           </div>
         </div>
       </header>
 
-      <main>
-        <section className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-24">
-          <div className="max-w-2xl space-y-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-foreground">
-              <BadgeCheck className="h-3.5 w-3.5 text-indigo-600" />
-              Built for client work that keeps changing
-            </div>
-
-            <div className="space-y-5">
-              <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-                Turn messy client requests into clear scope.
-              </h1>
-              <p className="max-w-xl text-base leading-8 text-muted-foreground sm:text-lg">
-                Scope Creep helps freelancers, agencies, and small teams extract tasks, establish a baseline, detect scope creep, and draft professional emails before unpaid work spreads.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg" className="h-11 px-5">
-                <Link href="/login">
-                  Get Started
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="h-11 px-5">
-                <a href="#workflow">See how it works</a>
-              </Button>
-            </div>
-
-            <p className="text-sm text-muted-foreground">
-              Used to keep requirements organized, scope visible, and client communication professional.
-            </p>
-          </div>
-
-          <div className="lg:pt-2">
-            <article className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-              <div className="flex items-center justify-between border-b border-border pb-4">
+      <main className="flex-1">
+        {/* ── Hero — Moody Deep Violet + Electric Purple ── */}
+        <section className="relative overflow-hidden bg-gradient-hero pt-20 pb-28 lg:pt-28 lg:pb-36">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="grid gap-16 lg:grid-cols-[1.1fr_0.9fr] items-center">
+              <div className="space-y-8">
+                {/* Pill badge */}
                 <div>
-                  <p className="text-sm font-medium text-foreground">Project workspace</p>
-                  <p className="text-xs text-muted-foreground">
-                    A calm view of scope, tasks, and client requests
-                  </p>
+                  <span className="badge-pill">AI-Powered Scope Management</span>
                 </div>
-                <div className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700">
-                  Ready
+
+                {/* Ultra-bold heading — MedNexus style + Electric Purple gradient */}
+                <h1
+                  className="text-5xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-[1.05]"
+                  style={{ fontFamily: "var(--font-syne)" }}
+                >
+                  The Future
+                  <br />
+                  of Scope
+                  <br />
+                  <span className="text-gradient">Protection.</span>
+                </h1>
+
+                <p className="max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg">
+                  Scope Creep uses AI to streamline every part of your client workflow — from
+                  requirement extraction to SOW baseline locking to professional pushback emails.
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-4 pt-1">
+                  <Link
+                    href="/login"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-purple-600 px-7 py-3.5 text-base font-semibold text-white hover:bg-purple-500 transition-all shadow-lg shadow-purple-600/30"
+                  >
+                    Get Started Free
+                  </Link>
+                  <a
+                    href="#workflow"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-purple-500/30 bg-purple-500/5 px-7 py-3.5 text-base font-semibold text-purple-200 hover:bg-purple-500/10 transition-all"
+                  >
+                    See How It Works
+                  </a>
+                </div>
+
+                <div className="flex items-center gap-6 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle2 className="h-4 w-4 text-purple-400" /> Free signup
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle2 className="h-4 w-4 text-purple-400" /> Powered by Gemini AI
+                  </span>
                 </div>
               </div>
 
-              <div className="mt-4 grid gap-4">
-                <div className="rounded-2xl border border-border bg-muted/40 p-4">
-                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                    <MessageSquareText className="h-4 w-4 text-indigo-600" />
-                    Client request
+              {/* Mock App Window with Purple Glow */}
+              <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
+                <div className="rounded-3xl border border-purple-500/30 bg-card/90 p-5 shadow-float backdrop-blur-xl space-y-4">
+                  <div className="flex items-center justify-between border-b border-purple-500/20 pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="h-3 w-3 rounded-full bg-rose-500/80" />
+                      <div className="h-3 w-3 rounded-full bg-amber-500/80" />
+                      <div className="h-3 w-3 rounded-full bg-emerald-500/80" />
+                    </div>
+                    <span className="text-xs font-semibold text-purple-300/80">
+                      Scope Creep · Middleware Demo
+                    </span>
                   </div>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    "Can we also add payment support and update the dashboard layout?"
-                  </p>
-                </div>
 
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-border bg-background p-4">
-                    <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                      Extracted
-                    </p>
-                    <p className="mt-2 text-sm font-medium text-foreground">3 tasks</p>
-                  </div>
-                  <div className="rounded-2xl border border-border bg-background p-4">
-                    <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                      Baseline
-                    </p>
-                    <p className="mt-2 text-sm font-medium text-foreground">Set</p>
-                  </div>
-                  <div className="rounded-2xl border border-border bg-background p-4">
-                    <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                      Scope
-                    </p>
-                    <p className="mt-2 text-sm font-medium text-foreground">Needs review</p>
-                  </div>
-                </div>
+                  <div className="space-y-3">
+                    <div className="rounded-2xl border border-purple-500/20 bg-purple-950/30 p-3.5 space-y-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 block">
+                        Incoming Client Email
+                      </span>
+                      <p className="text-xs text-foreground italic">
+                        &ldquo;Hey! Can we also add custom CSV exports and redesign the billing tab by tomorrow?&rdquo;
+                      </p>
+                    </div>
 
-                <div className="rounded-2xl border border-border bg-muted/30 p-4">
-                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                    <ShieldAlert className="h-4 w-4 text-amber-600" />
-                    Scope note
+                    <div className="rounded-2xl border border-rose-500/40 bg-rose-950/40 p-3.5 space-y-1">
+                      <div className="flex items-center justify-between text-xs font-bold text-rose-400">
+                        <span className="flex items-center gap-1.5">
+                          <ShieldAlert className="h-4 w-4" /> Scope Expansion Flagged!
+                        </span>
+                        <span>~6 Hours Extra</span>
+                      </div>
+                      <p className="text-[11px] text-rose-300/80">
+                        CSV export is excluded under agreed SOW deliverable #2.
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-purple-500/30 bg-card p-3.5 flex items-center justify-between text-xs font-semibold">
+                      <span className="text-foreground">Pushback Email Ready</span>
+                      <span className="text-purple-400 flex items-center gap-1">
+                        Option A: Change Order ($450) <Zap className="h-3 w-3" />
+                      </span>
+                    </div>
                   </div>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    The product keeps the request visible, structured, and ready for a
-                    professional response.
-                  </p>
                 </div>
               </div>
-            </article>
+            </div>
           </div>
         </section>
 
-        <section id="problem" className="border-t border-border/60 bg-muted/20">
-          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-            <SectionHeading
-              eyebrow="Problem"
-              title="Scope drift starts with small messages and ends with unpaid work."
-              description="Most client communication is unstructured. Requirements hide inside casual messages, scope becomes unclear, and teams lose time reconciling what was said versus what was agreed."
-            />
+        {/* ── Problem Section ── */}
+        <section id="problem" className="py-24 border-t border-purple-500/20 bg-card/50">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="max-w-2xl space-y-3 mb-14">
+              <span className="badge-pill">The Problem</span>
+              <h2
+                className="text-4xl font-extrabold tracking-tight text-foreground mt-4"
+                style={{ fontFamily: "var(--font-syne)" }}
+              >
+                Small messages create large unpaid work.
+              </h2>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Without explicit scope boundaries, informal client requests silently eat into your
+                profit margins and project deadlines.
+              </p>
+            </div>
 
-            <div className="mt-10 grid gap-4 lg:grid-cols-2">
-              <article className="rounded-2xl border border-border bg-card p-6">
-                <p className="text-sm font-semibold text-foreground">Without Scope Creep</p>
-                <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
-                  {problemItems.map((item) => (
-                    <li key={item} className="flex gap-3">
-                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-rose-500" />
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="rounded-2xl border border-rose-500/30 bg-rose-950/20 p-6 space-y-4">
+                <h3 className="text-base font-bold text-rose-400">
+                  ❌ Without Scope Creep
+                </h3>
+                <ul className="space-y-3 text-sm text-muted-foreground leading-relaxed">
+                  {problemItems.map((item, idx) => (
+                    <li key={idx} className="flex gap-2.5 items-start">
+                      <span className="h-1.5 w-1.5 rounded-full bg-rose-500 mt-2 shrink-0" />
                       <span>{item}</span>
                     </li>
                   ))}
                 </ul>
-              </article>
-
-              <article className="rounded-2xl border border-border bg-card p-6">
-                <p className="text-sm font-semibold text-foreground">With Scope Creep</p>
-                <div className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
-                  <div className="rounded-xl border border-border bg-muted/35 p-4">
-                    Requirements are extracted into tasks.
-                  </div>
-                  <div className="rounded-xl border border-border bg-muted/35 p-4">
-                    A baseline keeps original scope visible.
-                  </div>
-                  <div className="rounded-xl border border-border bg-muted/35 p-4">
-                    New requests are checked before work expands.
-                  </div>
-                </div>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <SectionHeading
-            eyebrow="Solution"
-            title="Scope Creep turns informal requests into a structured workflow."
-            description="The product sits between the message and the work, helping users review tasks, preserve the baseline, and respond clearly when requests expand."
-          />
-
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <article className="rounded-2xl border border-border bg-card p-6">
-              <p className="text-sm font-semibold text-foreground">Before</p>
-              <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                Free-form client messages, hidden assumptions, and no clear point of
-                comparison for new requests.
-              </p>
-            </article>
-            <article className="rounded-2xl border border-border bg-card p-6">
-              <p className="text-sm font-semibold text-foreground">After</p>
-              <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                Structured tasks, a defined baseline, a scope verdict, and a
-                professional email ready to send.
-              </p>
-            </article>
-          </div>
-        </section>
-
-        <section id="workflow" className="border-y border-border/60 bg-muted/20">
-          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-            <SectionHeading
-              eyebrow="Workflow"
-              title="A simple sequence from request to response."
-              description="The workflow is intentionally linear so it stays easy to understand, easy to remember, and easy to use under pressure."
-            />
-
-            <div className="mt-8 grid gap-3">
-              {workflowSteps.map((step, index) => (
-                <WorkflowStep
-                  key={step}
-                  label={step}
-                  index={index}
-                  isLast={index === workflowSteps.length - 1}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="features" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <SectionHeading
-            eyebrow="Features"
-            title="The core capabilities, without clutter."
-            description="Each feature supports a single part of the workflow and is designed to stay understandable on its own."
-          />
-
-          <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {featureCards.map((feature) => (
-              <FeatureCard
-                key={feature.title}
-                title={feature.title}
-                description={feature.description}
-                icon={feature.icon}
-              />
-            ))}
-          </div>
-        </section>
-
-        <section id="benefits" className="border-t border-border/60 bg-muted/20">
-          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-            <SectionHeading
-              eyebrow="Benefits"
-              title="The outcome is less noise, less guesswork, and more control."
-              description="The product is useful because it reduces effort, protects scope, and keeps communication professional."
-            />
-
-            <div className="mt-8 grid gap-4 lg:grid-cols-3">
-              {benefitCards.map((benefit) => (
-                <BenefitCard
-                  key={benefit.title}
-                  title={benefit.title}
-                  description={benefit.description}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <article className="rounded-3xl border border-border bg-card p-6 sm:p-8">
-            <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-              <div className="max-w-2xl space-y-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-600">
-                  Call to action
-                </p>
-                <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-                  Create your first project and start managing scope with clarity.
-                </h2>
-                <p className="text-sm leading-7 text-muted-foreground sm:text-base">
-                  Set up a workspace, paste a request, and see how Scope Creep
-                  structures the conversation before work expands.
-                </p>
               </div>
 
-              <Button asChild size="lg" className="h-11 px-6">
-                <Link href="/login">
-                  Get Started
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
+              <div className="rounded-2xl border border-purple-500/30 bg-purple-950/20 p-6 space-y-4">
+                <h3 className="text-base font-bold text-purple-300">
+                  ✅ With Scope Creep
+                </h3>
+                <ul className="space-y-3 text-sm text-muted-foreground leading-relaxed">
+                  <li className="flex gap-2.5 items-start">
+                    <span className="h-1.5 w-1.5 rounded-full bg-purple-400 mt-2 shrink-0" />
+                    <span>Raw text automatically structured into reviewable tasks.</span>
+                  </li>
+                  <li className="flex gap-2.5 items-start">
+                    <span className="h-1.5 w-1.5 rounded-full bg-purple-400 mt-2 shrink-0" />
+                    <span>Baseline SOW deliverables locked in database reference.</span>
+                  </li>
+                  <li className="flex gap-2.5 items-start">
+                    <span className="h-1.5 w-1.5 rounded-full bg-purple-400 mt-2 shrink-0" />
+                    <span>AI semantic compliance flags scope drift and drafts polite pushbacks.</span>
+                  </li>
+                </ul>
+              </div>
             </div>
-          </article>
+          </div>
+        </section>
+
+        {/* ── Workflow Steps Section ── */}
+        <section id="workflow" className="py-24 border-t border-purple-500/20 bg-gradient-hero">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="max-w-2xl space-y-4 mb-14">
+              <span className="badge-pill">Linear Workflow</span>
+              <h2
+                className="text-4xl font-extrabold tracking-tight text-foreground mt-4"
+                style={{ fontFamily: "var(--font-syne)" }}
+              >
+                6 simple steps from request to pushback.
+              </h2>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {workflowSteps.map((s) => (
+                <div
+                  key={s.step}
+                  className="rounded-2xl border border-purple-500/20 bg-card/60 backdrop-blur-md p-6 space-y-3 hover:border-purple-500/50 hover:shadow-float-sm transition-all duration-200"
+                >
+                  <span
+                    className="text-3xl font-extrabold text-purple-400/40 block"
+                    style={{ fontFamily: "var(--font-syne)" }}
+                  >
+                    {s.step}
+                  </span>
+                  <h3 className="text-sm font-bold text-foreground">{s.name}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{s.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Features Section ── */}
+        <section id="features" className="py-24 border-t border-purple-500/20 bg-card/50">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="max-w-2xl space-y-4 mb-14">
+              <span className="badge-pill">Core Capabilities</span>
+              <h2
+                className="text-4xl font-extrabold tracking-tight text-foreground mt-4"
+                style={{ fontFamily: "var(--font-syne)" }}
+              >
+                Designed for focus and clear boundaries.
+              </h2>
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {featureCards.map((f) => {
+                const Icon = f.icon;
+                return (
+                  <div
+                    key={f.title}
+                    className="rounded-2xl border border-purple-500/20 bg-card/80 p-6 space-y-4 hover:border-purple-500/50 hover:shadow-float-sm transition-all duration-200"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider bg-purple-950/60 border border-purple-500/20 px-2 py-0.5 rounded-full text-purple-300">
+                        {f.badge}
+                      </span>
+                    </div>
+                    <h3 className="text-sm font-bold text-foreground">{f.title}</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{f.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* ── CTA Banner ── */}
+        <section className="py-24 border-t border-purple-500/20 bg-gradient-hero">
+          <div className="mx-auto max-w-3xl px-6 text-center space-y-8">
+            <span className="badge-pill">Start for free</span>
+            <h2
+              className="text-5xl font-extrabold tracking-tight text-foreground mt-4"
+              style={{ fontFamily: "var(--font-syne)" }}
+            >
+              Stop losing money to scope creep.
+            </h2>
+            <p className="text-base text-muted-foreground">
+              Join freelancers and agencies who use AI to protect their time, profit, and client
+              relationships — all in one middleware tool.
+            </p>
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-8 py-4 text-base font-semibold text-white hover:bg-purple-500 transition-all shadow-lg shadow-purple-600/30"
+            >
+              Get Started Free <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </section>
       </main>
 
-      <footer className="border-t border-border/70 bg-background">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-muted-foreground sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-          <div className="flex items-center gap-2 text-foreground">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-muted">
-              <Layers3 className="h-4 w-4" />
+      {/* ── Footer ── */}
+      <footer className="border-t border-purple-500/20 py-10 bg-card">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded bg-purple-600 text-white">
+              <Sparkles className="h-3.5 w-3.5" />
             </div>
-            <span className="font-medium">Scope Creep</span>
+            <span className="font-semibold text-foreground">Scope Creep</span>
+            <span>— Protect your work.</span>
           </div>
-
-          <div className="flex flex-wrap items-center gap-4">
-            <a
-              href="#problem"
-              className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-            >
-              Problem
-            </a>
-            <a
-              href="#workflow"
-              className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-            >
-              Workflow
-            </a>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noreferrer"
-              className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-            >
-              GitHub
-            </a>
-          </div>
-
-          <p>© 2026 Scope Creep. All rights reserved.</p>
+          <div>© 2026 Scope Creep. All rights reserved.</div>
         </div>
       </footer>
     </div>
-  )
+  );
 }

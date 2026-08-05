@@ -1,182 +1,170 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
-import { Check, Layers3, ShieldAlert } from 'lucide-react'
+export const dynamic = "force-dynamic";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Sparkles, CheckCircle2, Loader2, ArrowRight } from "lucide-react";
+import { useToast } from "@/components/ui/toast";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [mode, setMode] = useState<'login' | 'signup'>('login')
-  const router = useRouter()
-  const supabase = createClient()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState<"login" | "signup">("login");
+  const router = useRouter();
+  const supabase = createClient();
+  const toast = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+    e.preventDefault();
+    if (!email || !password) return;
 
-    const { error } = mode === 'login'
-      ? await supabase.auth.signInWithPassword({ email, password })
-      : await supabase.auth.signUp({ email, password })
+    setLoading(true);
+    try {
+      const { error } =
+        mode === "login"
+          ? await supabase.auth.signInWithPassword({ email, password })
+          : await supabase.auth.signUp({ email, password });
 
-    if (error) {
-      setError(error.message)
-      setLoading(false)
-      return
+      if (error) {
+        toast.error(
+          mode === "login" ? "Authentication Failed" : "Signup Failed",
+          error.message
+        );
+        return;
+      }
+
+      toast.success(
+        mode === "login" ? "Welcome back!" : "Account created!",
+        "Redirecting to your workspace..."
+      );
+
+      router.push("/dashboard");
+      router.refresh();
+    } catch (err: any) {
+      toast.error("An unexpected error occurred", err.message);
+    } finally {
+      setLoading(false);
     }
-
-    router.push('/dashboard')
-    router.refresh()
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="grid min-h-screen lg:grid-cols-2">
-        <aside className="flex items-center border-b border-border/70 bg-muted/30 px-6 py-12 lg:border-b-0 lg:border-r lg:px-10 xl:px-16">
-          <div className="mx-auto max-w-xl space-y-8">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-primary text-primary-foreground shadow-sm">
-                <Layers3 className="h-4 w-4" />
-              </div>
-              <div>
-                <p className="text-lg font-semibold tracking-tight">Scope Creep</p>
-                <p className="text-sm text-muted-foreground">AI Scope Management Middleware</p>
-              </div>
+    <div className="min-h-screen bg-gradient-hero text-foreground flex flex-col justify-center py-12 sm:px-6 lg:px-8 selection:bg-purple-600 selection:text-white">
+      {/* Logo */}
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center space-y-4">
+        <Link href="/" className="inline-flex items-center gap-2.5 group">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-600 text-white shadow-lg shadow-purple-600/30 transition-transform group-hover:scale-105">
+            <Sparkles className="h-5 w-5" />
+          </div>
+          <span
+            className="text-xl font-bold tracking-tight text-foreground"
+            style={{ fontFamily: "var(--font-syne)" }}
+          >
+            Scope Creep
+          </span>
+        </Link>
+
+        <h2
+          className="text-3xl font-extrabold tracking-tight text-foreground"
+          style={{ fontFamily: "var(--font-syne)" }}
+        >
+          {mode === "login" ? "Welcome back." : "Get started free."}
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          {mode === "login"
+            ? "Sign in to your workspace and protect your scope."
+            : "Start extracting requirements and detecting scope creep in seconds."}
+        </p>
+      </div>
+
+      {/* Form Card */}
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="rounded-3xl border border-purple-500/30 bg-card/90 backdrop-blur-xl p-8 shadow-float space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-1.5">
+              <label htmlFor="email" className="text-xs font-semibold text-foreground block">
+                Email address
+              </label>
+              <input
+                id="email"
+                type="email"
+                required
+                placeholder="you@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input-premium h-11"
+              />
             </div>
 
-            <div className="space-y-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-indigo-600">Scope clarity for client work</p>
-              <h1 className="max-w-md text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-                Transform client requests into structured, reviewable scope before work begins.
-              </h1>
-              <p className="max-w-lg text-sm leading-7 text-muted-foreground sm:text-base">
-                A calm workspace for freelancers, agencies, and small teams to extract requirements, detect scope creep, and draft professional responses.
-              </p>
+            <div className="space-y-1.5">
+              <label htmlFor="password" className="text-xs font-semibold text-foreground block">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                required
+                minLength={6}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="input-premium h-11"
+              />
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3">
-              {[
-                'Extract requirements',
-                'Detect scope creep',
-                'Draft professional responses',
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm"
-                >
-                  <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700">
-                    <Check className="h-3.5 w-3.5" />
-                  </div>
-                  <p className="text-sm leading-6 text-foreground">{item}</p>
-                </div>
-              ))}
-            </div>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="h-11 w-full rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold shadow-lg shadow-purple-600/30"
+            >
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  {mode === "login" ? "Sign In" : "Create Account"}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </form>
 
-            <div className="hidden items-center gap-2 text-xs text-muted-foreground sm:flex">
-              <ShieldAlert className="h-3.5 w-3.5 text-indigo-600" />
-              <span>Designed for focus, trust, and clear client communication.</span>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-purple-500/20" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-card px-2 text-muted-foreground uppercase tracking-wider">
+                Or
+              </span>
             </div>
           </div>
-        </aside>
 
-        <main className="flex items-center justify-center px-4 py-10 sm:px-6 lg:px-10">
-          <form
-            onSubmit={handleSubmit}
-            className="w-full max-w-[460px] rounded-3xl border border-border bg-card p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-8"
-          >
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-muted text-foreground">
-                <Layers3 className="h-4 w-4" />
-              </div>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-600">
-                  Secure workspace access
-                </p>
-                <h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
-                  Welcome back
-                </h2>
-                <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                  Sign in to continue to your workspace.
-                </p>
-              </div>
-            </div>
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => setMode(mode === "login" ? "signup" : "login")}
+              className="text-xs text-purple-400 font-semibold hover:underline"
+            >
+              {mode === "login"
+                ? "Don't have an account? Sign up for free"
+                : "Already have an account? Sign in"}
+            </button>
+          </div>
 
-            <div className="mt-8 space-y-5">
-              <div className="space-y-2">
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium text-foreground"
-                >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label
-                  htmlFor="password"
-                  className="text-sm font-medium text-foreground"
-                >
-                  Password
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-12 w-full rounded-xl border border-border bg-background px-4 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
-                  required
-                  minLength={6}
-                />
-              </div>
-
-              {error && (
-                <p className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                  {error}
-                </p>
-              )}
-
-              <Button
-                type="submit"
-                className="h-12 w-full rounded-xl bg-foreground text-background hover:bg-zinc-800"
-                disabled={loading}
-              >
-                {loading ? 'Please wait...' : mode === 'login' ? 'Log in' : 'Sign up'}
-              </Button>
-
-              <div className="flex items-center gap-3 py-1">
-                <div className="h-px flex-1 bg-border" />
-                <span className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
-                  or
-                </span>
-                <div className="h-px flex-1 bg-border" />
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-                className="w-full text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-              >
-                {mode === 'login' ? "Don't have an account? Sign up" : 'Already have an account? Log in'}
-              </button>
-            </div>
-          </form>
-        </main>
+          <div className="pt-2 border-t border-purple-500/20 flex items-center justify-center gap-5 text-[11px] text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <CheckCircle2 className="h-3.5 w-3.5 text-purple-400" /> Free Signup
+            </span>
+            <span className="flex items-center gap-1">
+              <CheckCircle2 className="h-3.5 w-3.5 text-purple-400" /> Secure Auth
+            </span>
+          </div>
+        </div>
       </div>
     </div>
-  )
+  );
 }
