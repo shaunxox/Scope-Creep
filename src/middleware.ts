@@ -2,17 +2,18 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request })
+  const response = NextResponse.next({ request })
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  // If Supabase credentials are missing, skip auth refresh to prevent MIDDLEWARE_INVOCATION_FAILED
-  if (!supabaseUrl || !supabaseAnonKey) {
-    return supabaseResponse
+  // If Supabase credentials are not valid URLs, bypass middleware safely
+  if (!supabaseUrl || !supabaseAnonKey || !supabaseUrl.startsWith('http')) {
+    return response
   }
 
   try {
+    let supabaseResponse = response
     const supabase = createServerClient(
       supabaseUrl,
       supabaseAnonKey,
@@ -32,13 +33,12 @@ export async function middleware(request: NextRequest) {
       }
     )
 
-    // Refresh session if expired
     await supabase.auth.getUser()
+    return supabaseResponse
   } catch (error) {
-    console.error('Middleware Supabase auth error:', error)
+    console.error('Middleware execution error:', error)
+    return response
   }
-
-  return supabaseResponse
 }
 
 export const config = {
