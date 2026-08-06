@@ -185,6 +185,4 @@ Generates the pushback/negotiation email once the freelancer decides on hours/co
 - `middleware.ts` refreshes the session cookie on every request, which is required for sessions to persist correctly in Server Components.
 - Two Supabase clients exist (`lib/supabase/client.ts` for Client Components, `lib/supabase/server.ts` for Server Components/API routes) because of how the Next.js App Router handles cookies differently in each context.
 
-## Contributing
 
-This is currently a small-team project. If you're picking up a task, branch off `main`, keep API route contracts (request/response shapes above) stable unless the team agrees on a change, and update this README when routes or the schema change.
