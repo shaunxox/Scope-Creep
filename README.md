@@ -23,7 +23,7 @@ Freelancers and agencies lose time and money because requirements get buried in 
 - Dashboard metrics and a workflow tracker across both phases
 - Command menu (⌘K-style) for quick navigation
 - Task export to CSV, PDF, and Trello
-- Dark/light theme support
+
 
 ## Tech stack
 
