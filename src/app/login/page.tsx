@@ -53,25 +53,19 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-hero text-foreground flex flex-col justify-center py-12 sm:px-6 lg:px-8 selection:bg-purple-600 selection:text-white">
+    <div className="min-h-screen bg-gradient-hero text-foreground flex flex-col justify-center py-12 sm:px-6 lg:px-8 selection:bg-purple-600 selection:text-white font-sans">
       {/* Logo */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center space-y-4">
         <Link href="/" className="inline-flex items-center gap-2.5 group">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-600 text-white shadow-lg shadow-purple-600/30 transition-transform group-hover:scale-105">
             <Sparkles className="h-5 w-5" />
           </div>
-          <span
-            className="text-xl font-bold tracking-tight text-foreground"
-            style={{ fontFamily: "var(--font-syne)" }}
-          >
+          <span className="text-xl font-bold tracking-tight text-foreground">
             Scope Creep
           </span>
         </Link>
 
-        <h2
-          className="text-3xl font-extrabold tracking-tight text-foreground"
-          style={{ fontFamily: "var(--font-syne)" }}
-        >
+        <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
           {mode === "login" ? "Welcome back." : "Get started free."}
         </h2>
         <p className="text-sm text-muted-foreground">

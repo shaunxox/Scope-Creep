@@ -61,8 +61,8 @@ const featureCards = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-purple-600 selection:text-white">
-      {/* ── Navbar — MedNexus minimal style + Deep Violet ── */}
+    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-purple-600 selection:text-white font-sans">
+      {/* ── Navbar ── */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-purple-500/20">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
           {/* Logo */}
@@ -70,10 +70,7 @@ export default function Home() {
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-600 text-white shadow-lg shadow-purple-600/30 transition-transform group-hover:scale-105">
               <Sparkles className="h-4 w-4" />
             </div>
-            <span
-              className="text-lg font-bold text-foreground tracking-tight"
-              style={{ fontFamily: "var(--font-syne)" }}
-            >
+            <span className="text-lg font-bold text-foreground tracking-tight">
               Scope Creep
             </span>
           </Link>
@@ -110,7 +107,7 @@ export default function Home() {
       </header>
 
       <main className="flex-1">
-        {/* ── Hero — Moody Deep Violet + Electric Purple ── */}
+        {/* ── Hero ── */}
         <section className="relative overflow-hidden bg-gradient-hero pt-20 pb-28 lg:pt-28 lg:pb-36">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="grid gap-16 lg:grid-cols-[1.1fr_0.9fr] items-center">
@@ -120,11 +117,8 @@ export default function Home() {
                   <span className="badge-pill">AI-Powered Scope Management</span>
                 </div>
 
-                {/* Ultra-bold heading — MedNexus style + Electric Purple gradient */}
-                <h1
-                  className="text-5xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-[1.05]"
-                  style={{ fontFamily: "var(--font-syne)" }}
-                >
+                {/* Modern Headline in Plus Jakarta Sans */}
+                <h1 className="text-5xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-[1.08]">
                   The Future
                   <br />
                   of Scope
@@ -162,7 +156,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Mock App Window with Purple Glow */}
+              {/* Mock App Window */}
               <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
                 <div className="rounded-3xl border border-purple-500/30 bg-card/90 p-5 shadow-float backdrop-blur-xl space-y-4">
                   <div className="flex items-center justify-between border-b border-purple-500/20 pb-3">
@@ -216,10 +210,7 @@ export default function Home() {
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="max-w-2xl space-y-3 mb-14">
               <span className="badge-pill">The Problem</span>
-              <h2
-                className="text-4xl font-extrabold tracking-tight text-foreground mt-4"
-                style={{ fontFamily: "var(--font-syne)" }}
-              >
+              <h2 className="text-4xl font-extrabold tracking-tight text-foreground mt-4">
                 Small messages create large unpaid work.
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -271,10 +262,7 @@ export default function Home() {
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="max-w-2xl space-y-4 mb-14">
               <span className="badge-pill">Linear Workflow</span>
-              <h2
-                className="text-4xl font-extrabold tracking-tight text-foreground mt-4"
-                style={{ fontFamily: "var(--font-syne)" }}
-              >
+              <h2 className="text-4xl font-extrabold tracking-tight text-foreground mt-4">
                 6 simple steps from request to pushback.
               </h2>
             </div>
@@ -285,10 +273,7 @@ export default function Home() {
                   key={s.step}
                   className="rounded-2xl border border-purple-500/20 bg-card/60 backdrop-blur-md p-6 space-y-3 hover:border-purple-500/50 hover:shadow-float-sm transition-all duration-200"
                 >
-                  <span
-                    className="text-3xl font-extrabold text-purple-400/40 block"
-                    style={{ fontFamily: "var(--font-syne)" }}
-                  >
+                  <span className="text-3xl font-extrabold text-purple-400/40 block">
                     {s.step}
                   </span>
                   <h3 className="text-sm font-bold text-foreground">{s.name}</h3>
@@ -304,10 +289,7 @@ export default function Home() {
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="max-w-2xl space-y-4 mb-14">
               <span className="badge-pill">Core Capabilities</span>
-              <h2
-                className="text-4xl font-extrabold tracking-tight text-foreground mt-4"
-                style={{ fontFamily: "var(--font-syne)" }}
-              >
+              <h2 className="text-4xl font-extrabold tracking-tight text-foreground mt-4">
                 Designed for focus and clear boundaries.
               </h2>
             </div>
@@ -341,10 +323,7 @@ export default function Home() {
         <section className="py-24 border-t border-purple-500/20 bg-gradient-hero">
           <div className="mx-auto max-w-3xl px-6 text-center space-y-8">
             <span className="badge-pill">Start for free</span>
-            <h2
-              className="text-5xl font-extrabold tracking-tight text-foreground mt-4"
-              style={{ fontFamily: "var(--font-syne)" }}
-            >
+            <h2 className="text-5xl font-extrabold tracking-tight text-foreground mt-4">
               Stop losing money to scope creep.
             </h2>
             <p className="text-base text-muted-foreground">

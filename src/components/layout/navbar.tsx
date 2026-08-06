@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Sparkles, LogOut, Layers3, Command } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import type { Project } from "@/types";
 
 interface NavbarProps {
@@ -39,10 +38,7 @@ export function Navbar({
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-600 text-white shadow-md shadow-purple-600/30 transition-transform duration-200 group-hover:scale-105">
               <Sparkles className="h-4 w-4" />
             </div>
-            <span
-              className="text-base font-bold tracking-tight text-foreground"
-              style={{ fontFamily: "var(--font-syne)" }}
-            >
+            <span className="text-base font-bold tracking-tight text-foreground">
               Scope Creep
             </span>
           </Link>
@@ -78,9 +74,6 @@ export function Navbar({
               </span>
             </button>
           )}
-
-          {/* Light/Dark Mode Switcher */}
-          <ThemeToggle />
 
           {/* User Email */}
           {userEmail && (
